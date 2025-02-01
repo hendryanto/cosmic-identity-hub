@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { 
-  Blender, 
+  Beef, // for blender/food processor
   Coffee, 
   Fan, 
   Refrigerator,
@@ -9,12 +9,12 @@ import {
   Waves,
   Utensils,
   Flame,
-  Soup
+  ChefHat // for rice cooker
 } from "lucide-react";
 
 const services = [
   {
-    icon: <Blender className="w-12 h-12 mb-4" />,
+    icon: <Beef className="w-12 h-12 mb-4" />,
     title: "Blender",
     description: "Blender dan peralatan dapur",
   },
@@ -29,7 +29,7 @@ const services = [
     description: "Kompor gas berkualitas",
   },
   {
-    icon: <Soup className="w-12 h-12 mb-4" />,
+    icon: <ChefHat className="w-12 h-12 mb-4" />,
     title: "Rice Cooker",
     description: "Rice cooker dan magic com",
   },
