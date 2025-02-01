@@ -1,36 +1,47 @@
 import { motion } from "framer-motion";
-import { Refrigerator, Waves, Coffee, Fan, Smartphone, Tv } from "lucide-react";
+import { 
+  Blender, 
+  Coffee, 
+  Fan, 
+  Refrigerator,
+  Tv,
+  Smartphone,
+  Waves,
+  Utensils,
+  Flame,
+  Soup
+} from "lucide-react";
 
 const services = [
   {
-    icon: <Refrigerator className="w-12 h-12 mb-4" />,
-    title: "Kitchen Appliances",
-    description: "Smart refrigerators, dishwashers, and cooking solutions",
+    icon: <Blender className="w-12 h-12 mb-4" />,
+    title: "Blender",
+    description: "Blender dan peralatan dapur",
   },
   {
-    icon: <Waves className="w-12 h-12 mb-4" />,
-    title: "Laundry Solutions",
-    description: "Advanced washers and dryers for your home",
+    icon: <Utensils className="w-12 h-12 mb-4" />,
+    title: "Cooking Ware",
+    description: "Peralatan memasak",
+  },
+  {
+    icon: <Flame className="w-12 h-12 mb-4" />,
+    title: "Gas Cooker",
+    description: "Kompor gas berkualitas",
+  },
+  {
+    icon: <Soup className="w-12 h-12 mb-4" />,
+    title: "Rice Cooker",
+    description: "Rice cooker dan magic com",
   },
   {
     icon: <Coffee className="w-12 h-12 mb-4" />,
-    title: "Small Appliances",
-    description: "Coffee makers, toasters, and kitchen essentials",
+    title: "Coffee Maker",
+    description: "Pembuat kopi otomatis",
   },
   {
     icon: <Fan className="w-12 h-12 mb-4" />,
-    title: "Climate Control",
-    description: "Air conditioners and heating solutions",
-  },
-  {
-    icon: <Smartphone className="w-12 h-12 mb-4" />,
-    title: "Smart Integration",
-    description: "Connected appliances for the modern home",
-  },
-  {
-    icon: <Tv className="w-12 h-12 mb-4" />,
-    title: "Home Entertainment",
-    description: "Premium audio and visual solutions",
+    title: "Air Cooler & Fan",
+    description: "Pendingin dan kipas angin",
   },
 ];
 
@@ -38,14 +49,17 @@ const Services = () => {
   return (
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        <motion.h2
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-3xl md:text-4xl font-bold text-center mb-12"
+          className="text-center mb-12"
         >
-          Our Product Categories
-        </motion.h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Kategori Produk</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Temukan berbagai produk elektronik rumah tangga berkualitas untuk kebutuhan keluarga Anda
+          </p>
+        </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <motion.div

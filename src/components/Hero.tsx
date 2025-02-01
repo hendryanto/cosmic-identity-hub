@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 
 const Hero = () => {
   return (
-    <section className="min-h-screen flex items-center justify-center bg-primary text-white pt-16">
+    <section className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary to-primary/90 text-white pt-16">
       <div className="container mx-auto px-4 py-32 text-center">
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
@@ -12,7 +12,7 @@ const Hero = () => {
           transition={{ duration: 0.5 }}
           className="text-4xl md:text-6xl font-bold mb-6"
         >
-          Smart Living, Made Simple
+          Inovasi untuk Keluarga Indonesia
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -20,7 +20,7 @@ const Hero = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-xl md:text-2xl mb-8 text-gray-300 max-w-2xl mx-auto"
         >
-          Discover our range of innovative home appliances designed to make your life easier and more efficient
+          Sejak 1976, Cosmos telah menjadi bagian dari keluarga Indonesia dengan produk elektronik rumah tangga berkualitas
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -32,9 +32,9 @@ const Hero = () => {
             variant="secondary"
             size="lg"
             className="text-lg"
-            onClick={() => window.open("https://store.electrohome.com", "_blank")}
+            onClick={() => window.open("https://store.cosmos.id", "_blank")}
           >
-            Shop Now
+            Official Store
             <ArrowRight className="ml-2" />
           </Button>
           <Button
@@ -43,7 +43,7 @@ const Hero = () => {
             className="text-lg text-white border-white hover:bg-white hover:text-primary"
             onClick={() => window.location.href = '/products'}
           >
-            View Products
+            Lihat Produk
           </Button>
         </motion.div>
       </div>
