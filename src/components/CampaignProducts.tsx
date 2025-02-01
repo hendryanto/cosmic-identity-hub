@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { ArrowRight } from "lucide-react";
-import { Product, getCampaignProducts } from "../services/productService";
+import { Product, getMockCampaignProducts } from "../services/productService";
 import { useToast } from "./ui/use-toast";
 
 const CampaignProducts = () => {
@@ -12,7 +12,8 @@ const CampaignProducts = () => {
   useEffect(() => {
     const fetchCampaignProducts = async () => {
       try {
-        const campaignProducts = await getCampaignProducts();
+        // Using mock data for now
+        const campaignProducts = getMockCampaignProducts();
         console.log('Fetched campaign products:', campaignProducts);
         setProducts(campaignProducts);
       } catch (error) {

@@ -1,69 +1,80 @@
-import { executeQuery } from '../lib/db';
+import { Product } from '../types/product';
 
-export interface Product {
-  id: number;
-  name: string;
-  description: string;
-  category: string;
-  price: string;
-  features: string;
-  whatsInTheBox: string;
-  warranty: string;
-  manual: string;
-  image?: string;
-}
+const API_URL = 'https://api.cosmos.id'; // Replace with your actual API endpoint
 
 export const getProducts = async (): Promise<Product[]> => {
   console.log('Fetching all products');
-  return executeQuery<Product[]>('SELECT * FROM products');
+  try {
+    const response = await fetch(`${API_URL}/products`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch products');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw error;
+  }
 };
 
 export const getProductsByCategory = async (category: string): Promise<Product[]> => {
   console.log('Fetching products by category:', category);
-  return executeQuery<Product[]>('SELECT * FROM products WHERE category = ?', [category]);
+  try {
+    const response = await fetch(`${API_URL}/products?category=${encodeURIComponent(category)}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch products by category');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching products by category:', error);
+    throw error;
+  }
 };
 
 export const getCampaignProducts = async (): Promise<Product[]> => {
   console.log('Fetching campaign products');
-  return executeQuery<Product[]>('SELECT * FROM products WHERE isCampaign = true LIMIT 3');
+  try {
+    const response = await fetch(`${API_URL}/products/campaign`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch campaign products');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching campaign products:', error);
+    throw error;
+  }
 };
 
-export const addProduct = async (product: Omit<Product, 'id'>): Promise<number> => {
-  console.log('Adding new product:', product);
-  const result = await executeQuery<any>(
-    'INSERT INTO products (name, description, category, price, features, whatsInTheBox, warranty, manual, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [
-      product.name,
-      product.description,
-      product.category,
-      product.price,
-      product.features,
-      product.whatsInTheBox,
-      product.warranty,
-      product.manual,
-      product.image
-    ]
-  );
-  return result.insertId;
-};
+// Mock data for development until the API is ready
+const mockProducts: Product[] = [
+  {
+    id: 1,
+    name: "Rice Cooker Digital",
+    description: "Smart rice cooker with multiple cooking modes",
+    category: "Kitchen Appliances",
+    price: "Rp 599.000",
+    features: "Multiple cooking modes,Digital display,Keep warm function",
+    whatsInTheBox: "Rice cooker,Measuring cup,Spatula,Steam basket",
+    warranty: "1 year official warranty",
+    manual: "https://cosmos.id/manuals/rice-cooker.pdf",
+    image: "/placeholder.svg"
+  },
+  {
+    id: 2,
+    name: "Stand Fan",
+    description: "Powerful and quiet stand fan",
+    category: "Home Appliances",
+    price: "Rp 299.000",
+    features: "3 speed settings,Oscillation,Height adjustment",
+    whatsInTheBox: "Fan base,Stand pole,Fan head,Assembly manual",
+    warranty: "2 years official warranty",
+    manual: "https://cosmos.id/manuals/stand-fan.pdf",
+    image: "/placeholder.svg"
+  }
+];
 
-export const updateProduct = async (id: number, product: Partial<Product>): Promise<void> => {
-  console.log('Updating product:', id, product);
-  const updates = Object.entries(product)
-    .filter(([_, value]) => value !== undefined)
-    .map(([key, _]) => `${key} = ?`);
-  
-  const values = Object.entries(product)
-    .filter(([_, value]) => value !== undefined)
-    .map(([_, value]) => value);
-
-  await executeQuery(
-    `UPDATE products SET ${updates.join(', ')} WHERE id = ?`,
-    [...values, id]
-  );
-};
-
-export const deleteProduct = async (id: number): Promise<void> => {
-  console.log('Deleting product:', id);
-  await executeQuery('DELETE FROM products WHERE id = ?', [id]);
-};
+// Use mock data for development
+export const getMockProducts = () => mockProducts;
+export const getMockProductsByCategory = (category: string) => 
+  mockProducts.filter(p => p.category === category);
+export const getMockCampaignProducts = () => 
+  mockProducts.slice(0, 3);

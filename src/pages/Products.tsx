@@ -6,7 +6,7 @@ import {
   ChefHat, Utensils, Flame, Coffee, Fan, Waves, 
   Beef, Timer, Box, Wind, Droplet, Zap, Lightbulb
 } from "lucide-react";
-import { Product, getProductsByCategory } from "../services/productService";
+import { Product, getMockProductsByCategory } from "../services/productService";
 import { useToast } from "../components/ui/use-toast";
 
 const Products = () => {
@@ -17,10 +17,9 @@ const Products = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const [kitchen, home] = await Promise.all([
-          getProductsByCategory('Kitchen Appliances'),
-          getProductsByCategory('Home Appliances')
-        ]);
+        // Using mock data for now
+        const kitchen = getMockProductsByCategory('Kitchen Appliances');
+        const home = getMockProductsByCategory('Home Appliances');
         
         console.log('Fetched kitchen products:', kitchen);
         console.log('Fetched home products:', home);
