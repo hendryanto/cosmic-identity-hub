@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS products (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  category VARCHAR(100) NOT NULL,
+  price VARCHAR(50) NOT NULL,
+  features TEXT,
+  whatsInTheBox TEXT,
+  warranty TEXT,
+  manual VARCHAR(255),
+  image VARCHAR(255),
+  is_campaign BOOLEAN DEFAULT false,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

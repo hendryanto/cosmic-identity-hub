@@ -1,9 +1,8 @@
 import { Product } from '../types/product';
 
-const API_URL = 'https://api.cosmos.id'; // Replace with your actual API endpoint
+const API_URL = 'http://localhost:3001/api';
 
 export const getProducts = async (): Promise<Product[]> => {
-  console.log('Fetching all products');
   try {
     const response = await fetch(`${API_URL}/products`);
     if (!response.ok) {
@@ -17,9 +16,8 @@ export const getProducts = async (): Promise<Product[]> => {
 };
 
 export const getProductsByCategory = async (category: string): Promise<Product[]> => {
-  console.log('Fetching products by category:', category);
   try {
-    const response = await fetch(`${API_URL}/products?category=${encodeURIComponent(category)}`);
+    const response = await fetch(`${API_URL}/products/category/${encodeURIComponent(category)}`);
     if (!response.ok) {
       throw new Error('Failed to fetch products by category');
     }
@@ -31,7 +29,6 @@ export const getProductsByCategory = async (category: string): Promise<Product[]
 };
 
 export const getCampaignProducts = async (): Promise<Product[]> => {
-  console.log('Fetching campaign products');
   try {
     const response = await fetch(`${API_URL}/products/campaign`);
     if (!response.ok) {
