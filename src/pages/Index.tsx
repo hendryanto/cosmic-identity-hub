@@ -1,7 +1,6 @@
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
-import Services from "../components/Services";
-import About from "../components/About";
+import CampaignProducts from "../components/CampaignProducts";
 import Contact from "../components/Contact";
 
 const Index = () => {
@@ -9,8 +8,7 @@ const Index = () => {
     <main className="min-h-screen bg-white">
       <Navbar />
       <Hero />
-      <Services />
-      <About />
+      <CampaignProducts />
       <Contact />
     </main>
   );
