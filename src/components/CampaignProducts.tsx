@@ -1,32 +1,33 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { ArrowRight } from "lucide-react";
-
-const products = [
-  {
-    id: 1,
-    name: "Rice Cooker Digital 2L",
-    description: "Rice cooker digital dengan 10 menu preset dan teknologi 3D heating untuk hasil nasi yang sempurna",
-    image: "/lovable-uploads/42c7ecd0-4323-444c-a0d5-374d9404a16e.png",
-    price: "Rp 799.000",
-  },
-  {
-    id: 2,
-    name: "Stand Fan 16 inch",
-    description: "Kipas angin berdiri 16 inch dengan 3 kecepatan dan swing otomatis untuk sirkulasi udara optimal",
-    image: "/lovable-uploads/21dbcc70-f063-4b4d-868f-91688ac39e18.png",
-    price: "Rp 299.000",
-  },
-  {
-    id: 3,
-    name: "Air Cooler 15L",
-    description: "Pendingin udara dengan kapasitas 15L, 3 kecepatan, dan mode sleep untuk kenyamanan maksimal",
-    image: "/lovable-uploads/43efd89a-bcf3-41f9-b9d1-5a305bfd1e07.png",
-    price: "Rp 1.299.000",
-  },
-];
+import { Product, getCampaignProducts } from "../services/productService";
+import { useToast } from "./ui/use-toast";
 
 const CampaignProducts = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchCampaignProducts = async () => {
+      try {
+        const campaignProducts = await getCampaignProducts();
+        console.log('Fetched campaign products:', campaignProducts);
+        setProducts(campaignProducts);
+      } catch (error) {
+        console.error('Error fetching campaign products:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load campaign products. Please try again later.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchCampaignProducts();
+  }, [toast]);
+
   return (
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
