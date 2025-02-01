@@ -78,3 +78,5 @@ export const getMockProductsByCategory = (category: string) =>
   mockProducts.filter(p => p.category === category);
 export const getMockCampaignProducts = () => 
   mockProducts.slice(0, 3);
+
+export type { Product };
