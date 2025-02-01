@@ -10,11 +10,9 @@ import {
   Waves,
   Beef,
   Timer,
-  Oven,
   Box,
   Wind,
   Droplet,
-  Iron as IronIcon,
   Zap,
   Lightbulb
 } from "lucide-react";
@@ -32,7 +30,7 @@ const kitchenAppliances: ProductItem[] = [
   { name: "Induction Cooker", icon: <Flame className="w-12 h-12" /> },
   { name: "Juicer", icon: <Waves className="w-12 h-12" /> },
   { name: "Mixer", icon: <Timer className="w-12 h-12" /> },
-  { name: "Oven", icon: <Oven className="w-12 h-12" /> },
+  { name: "Oven", icon: <Flame className="w-12 h-12" /> },
   { name: "Rice Cooker", icon: <ChefHat className="w-12 h-12" /> },
   { name: "SPB (Rice Box)", icon: <Box className="w-12 h-12" /> },
 ];
@@ -42,7 +40,7 @@ const homeAppliances: ProductItem[] = [
   { name: "Coffee Maker", icon: <Coffee className="w-12 h-12" /> },
   { name: "Electric Kettle", icon: <Droplet className="w-12 h-12" /> },
   { name: "Fan", icon: <Fan className="w-12 h-12" /> },
-  { name: "Iron", icon: <IronIcon className="w-12 h-12" /> },
+  { name: "Iron", icon: <Zap className="w-12 h-12" /> },
   { name: "Water Dispenser", icon: <Droplet className="w-12 h-12" /> },
   { name: "Water Pump", icon: <Zap className="w-12 h-12" /> },
   { name: "Sterilizer UVC Lamp", icon: <Lightbulb className="w-12 h-12" /> },
