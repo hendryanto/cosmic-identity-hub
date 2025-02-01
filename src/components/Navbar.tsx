@@ -22,7 +22,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex-shrink-0">
             <img 
-              src="/lovable-uploads/74a679b8-bac4-49d8-a9cf-93b9f89e4b96.png" 
+              src="/lovable-uploads/7b1f6793-4b5e-47ba-858d-1c55aa05ac49.png" 
               alt="Cosmos Logo" 
               className="h-8 w-auto"
             />
