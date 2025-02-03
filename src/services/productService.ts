@@ -1,10 +1,10 @@
 import { Product } from '../types/product';
 
-const API_URL = 'http://localhost:3001/api';
+const API_URL = 'http://your-server-domain/src/server'; // Replace with your actual PHP server domain
 
 export const getProducts = async (): Promise<Product[]> => {
   try {
-    const response = await fetch(`${API_URL}/products`);
+    const response = await fetch(`${API_URL}/products.php`);
     if (!response.ok) {
       throw new Error('Failed to fetch products');
     }
@@ -17,7 +17,7 @@ export const getProducts = async (): Promise<Product[]> => {
 
 export const getProductsByCategory = async (category: string): Promise<Product[]> => {
   try {
-    const response = await fetch(`${API_URL}/products/category/${encodeURIComponent(category)}`);
+    const response = await fetch(`${API_URL}/products.php?category=${encodeURIComponent(category)}`);
     if (!response.ok) {
       throw new Error('Failed to fetch products by category');
     }
@@ -30,7 +30,7 @@ export const getProductsByCategory = async (category: string): Promise<Product[]
 
 export const getCampaignProducts = async (): Promise<Product[]> => {
   try {
-    const response = await fetch(`${API_URL}/products/campaign`);
+    const response = await fetch(`${API_URL}/products.php?campaign=true`);
     if (!response.ok) {
       throw new Error('Failed to fetch campaign products');
     }
