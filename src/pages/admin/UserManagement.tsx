@@ -23,7 +23,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 interface User {
   id: number;
   email: string;
-  role: "admin" | "user";
+  role: 'superuser' | 'admin' | 'operator';
   created_at: string;
 }
 
@@ -31,10 +31,28 @@ const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [newRole, setNewRole] = useState<"admin" | "user">("user");
+  const [newRole, setNewRole] = useState<'superuser' | 'admin' | 'operator'>('operator');
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
+    const checkCurrentUserRole = async () => {
+      try {
+        const response = await fetch("http://localhost/src/server/auth.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ action: "checkAuth" }),
+        });
+        const data = await response.json();
+        setCurrentUserRole(data.role);
+      } catch (error) {
+        console.error("Failed to check user role:", error);
+      }
+    };
+
+    checkCurrentUserRole();
     fetchUsers();
   }, []);
 
@@ -61,6 +79,19 @@ const UserManagement = () => {
     }
   };
 
+  if (currentUserRole !== 'superuser') {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Access Denied</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Only superusers can access user management.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -84,7 +115,7 @@ const UserManagement = () => {
         });
         setNewEmail("");
         setNewPassword("");
-        setNewRole("user");
+        setNewRole("operator");
         fetchUsers();
       }
     } catch (error) {
@@ -97,7 +128,7 @@ const UserManagement = () => {
     }
   };
 
-  const handleUpdateRole = async (userId: number, newRole: "admin" | "user") => {
+  const handleUpdateRole = async (userId: number, newRole: 'superuser' | 'admin' | 'operator') => {
     try {
       const response = await fetch("http://localhost/src/server/auth.php", {
         method: "POST",
@@ -158,13 +189,14 @@ const UserManagement = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
-              <Select value={newRole} onValueChange={(value: "admin" | "user") => setNewRole(value)}>
+              <Select value={newRole} onValueChange={(value: 'superuser' | 'admin' | 'operator') => setNewRole(value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="operator">Operator</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="superuser">Superuser</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -196,7 +228,7 @@ const UserManagement = () => {
                   <TableCell>
                     <Select
                       value={user.role}
-                      onValueChange={(value: "admin" | "user") =>
+                      onValueChange={(value: 'superuser' | 'admin' | 'operator') =>
                         handleUpdateRole(user.id, value)
                       }
                     >
@@ -204,8 +236,9 @@ const UserManagement = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="user">User</SelectItem>
+                        <SelectItem value="operator">Operator</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="superuser">Superuser</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>

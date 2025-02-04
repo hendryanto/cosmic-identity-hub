@@ -11,6 +11,7 @@ import Warranty from "./pages/Warranty";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -25,7 +26,15 @@ function App() {
         <Route path="/support/contact" element={<Contact />} />
         <Route path="/support/faq" element={<FAQ />} />
         <Route path="/warranty" element={<Warranty />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route 
+          path="/admin" 
+          element={
+            <ProtectedRoute 
+              element={<Admin />} 
+              allowedRoles={['superuser', 'admin', 'operator']} 
+            />
+          } 
+        />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -23,6 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $user = $stmt->fetch();
                     
                     if ($user && password_verify($data->password, $user['password'])) {
+                        session_start();
+                        $_SESSION['user_id'] = $user['id'];
+                        $_SESSION['user_role'] = $user['role'];
+                        
                         echo json_encode([
                             "success" => true,
                             "user" => [
@@ -37,26 +41,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 break;
-                
-            case 'register':
-                if (isset($data->email) && isset($data->password)) {
-                    try {
-                        $hashedPassword = password_hash($data->password, PASSWORD_DEFAULT);
-                        $stmt = $pdo->prepare("INSERT INTO users (email, password, role) VALUES (?, ?, ?)");
-                        $stmt->execute([$data->email, $hashedPassword, $data->role ?? 'user']);
-                        
-                        echo json_encode([
-                            "success" => true,
-                            "message" => "User registered successfully"
-                        ]);
-                    } catch (PDOException $e) {
-                        http_response_code(400);
-                        echo json_encode(["error" => "Email already exists"]);
-                    }
+
+            case 'checkAuth':
+                session_start();
+                if (isset($_SESSION['user_id'])) {
+                    echo json_encode([
+                        "authenticated" => true,
+                        "role" => $_SESSION['user_role']
+                    ]);
+                } else {
+                    echo json_encode([
+                        "authenticated" => false,
+                        "role" => null
+                    ]);
                 }
                 break;
 
             case 'getUsers':
+                session_start();
+                if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'superuser') {
+                    http_response_code(403);
+                    echo json_encode(["error" => "Access denied"]);
+                    break;
+                }
+                
                 try {
                     $stmt = $pdo->query("SELECT id, email, role, created_at FROM users");
                     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -71,6 +79,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
 
             case 'updateRole':
+                session_start();
+                if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'superuser') {
+                    http_response_code(403);
+                    echo json_encode(["error" => "Access denied"]);
+                    break;
+                }
+
                 if (isset($data->userId) && isset($data->role)) {
                     try {
                         $stmt = $pdo->prepare("UPDATE users SET role = ? WHERE id = ?");
@@ -87,6 +102,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
 
             case 'addUser':
+                session_start();
+                if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'superuser') {
+                    http_response_code(403);
+                    echo json_encode(["error" => "Access denied"]);
+                    break;
+                }
+
                 if (isset($data->email) && isset($data->password) && isset($data->role)) {
                     try {
                         $hashedPassword = password_hash($data->password, PASSWORD_DEFAULT);
