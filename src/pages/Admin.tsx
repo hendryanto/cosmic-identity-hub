@@ -1,9 +1,9 @@
-import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ProductsManager from "../components/admin/ProductsManager";
 import CampaignManager from "../components/admin/CampaignManager";
 import EventsManager from "../components/admin/EventsManager";
+import SlideManager from "../components/admin/SlideManager";
 
 const Admin = () => {
   return (
@@ -17,6 +17,7 @@ const Admin = () => {
             <TabsTrigger value="products">Products Management</TabsTrigger>
             <TabsTrigger value="campaign">Campaign Products</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="slides">Slider Images</TabsTrigger>
           </TabsList>
           
           <TabsContent value="products">
@@ -29,6 +30,10 @@ const Admin = () => {
 
           <TabsContent value="events">
             <EventsManager />
+          </TabsContent>
+
+          <TabsContent value="slides">
+            <SlideManager />
           </TabsContent>
         </Tabs>
       </div>
