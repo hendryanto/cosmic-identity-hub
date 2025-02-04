@@ -4,6 +4,7 @@ import ProductsManager from "../components/admin/ProductsManager";
 import CampaignManager from "../components/admin/CampaignManager";
 import EventsManager from "../components/admin/EventsManager";
 import SlideManager from "../components/admin/SlideManager";
+import UserManagement from "./admin/UserManagement";
 
 const Admin = () => {
   return (
@@ -18,6 +19,7 @@ const Admin = () => {
             <TabsTrigger value="campaign">Campaign Products</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="slides">Slider Images</TabsTrigger>
+            <TabsTrigger value="users">User Management</TabsTrigger>
           </TabsList>
           
           <TabsContent value="products">
@@ -34,6 +36,10 @@ const Admin = () => {
 
           <TabsContent value="slides">
             <SlideManager />
+          </TabsContent>
+
+          <TabsContent value="users">
+            <UserManagement />
           </TabsContent>
         </Tabs>
       </div>

@@ -10,6 +10,7 @@ import FAQ from "./pages/support/FAQ";
 import Warranty from "./pages/Warranty";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/support/faq" element={<FAQ />} />
         <Route path="/warranty" element={<Warranty />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/login" element={<Login />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

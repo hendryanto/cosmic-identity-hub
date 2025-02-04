@@ -42,8 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (isset($data->email) && isset($data->password)) {
                     try {
                         $hashedPassword = password_hash($data->password, PASSWORD_DEFAULT);
-                        $stmt = $pdo->prepare("INSERT INTO users (email, password) VALUES (?, ?)");
-                        $stmt->execute([$data->email, $hashedPassword]);
+                        $stmt = $pdo->prepare("INSERT INTO users (email, password, role) VALUES (?, ?, ?)");
+                        $stmt->execute([$data->email, $hashedPassword, $data->role ?? 'user']);
                         
                         echo json_encode([
                             "success" => true,
@@ -52,6 +52,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } catch (PDOException $e) {
                         http_response_code(400);
                         echo json_encode(["error" => "Email already exists"]);
+                    }
+                }
+                break;
+
+            case 'getUsers':
+                try {
+                    $stmt = $pdo->query("SELECT id, email, role, created_at FROM users");
+                    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    echo json_encode([
+                        "success" => true,
+                        "users" => $users
+                    ]);
+                } catch (PDOException $e) {
+                    http_response_code(500);
+                    echo json_encode(["error" => "Failed to fetch users"]);
+                }
+                break;
+
+            case 'updateRole':
+                if (isset($data->userId) && isset($data->role)) {
+                    try {
+                        $stmt = $pdo->prepare("UPDATE users SET role = ? WHERE id = ?");
+                        $stmt->execute([$data->role, $data->userId]);
+                        echo json_encode([
+                            "success" => true,
+                            "message" => "Role updated successfully"
+                        ]);
+                    } catch (PDOException $e) {
+                        http_response_code(500);
+                        echo json_encode(["error" => "Failed to update role"]);
+                    }
+                }
+                break;
+
+            case 'addUser':
+                if (isset($data->email) && isset($data->password) && isset($data->role)) {
+                    try {
+                        $hashedPassword = password_hash($data->password, PASSWORD_DEFAULT);
+                        $stmt = $pdo->prepare("INSERT INTO users (email, password, role) VALUES (?, ?, ?)");
+                        $stmt->execute([$data->email, $hashedPassword, $data->role]);
+                        echo json_encode([
+                            "success" => true,
+                            "message" => "User added successfully"
+                        ]);
+                    } catch (PDOException $e) {
+                        http_response_code(400);
+                        echo json_encode(["error" => "Failed to add user"]);
                     }
                 }
                 break;
