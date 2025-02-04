@@ -6,6 +6,7 @@ import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
 import Support from "./pages/Support";
 import Contact from "./pages/support/Contact";
+import FAQ from "./pages/support/FAQ";
 import Warranty from "./pages/Warranty";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
@@ -21,6 +22,7 @@ function App() {
         <Route path="/events/:id" element={<EventDetail />} />
         <Route path="/support" element={<Support />} />
         <Route path="/support/contact" element={<Contact />} />
+        <Route path="/support/faq" element={<FAQ />} />
         <Route path="/warranty" element={<Warranty />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<NotFound />} />
