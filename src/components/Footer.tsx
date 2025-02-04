@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Instagram, Linkedin, Facebook, Twitter, Youtube, Whatsapp, TiktokIcon } from "lucide-react";
 
 const Footer = () => {
   const footerLinks = {
@@ -145,42 +146,44 @@ const Footer = () => {
         </div>
 
         <div className="border-t pt-8">
-          <div className="mb-8">
-            <h3 className="font-semibold mb-4">Download Aplikasi Kami</h3>
-            <div className="flex gap-4">
-              <a href="#" target="_blank" rel="noopener noreferrer">
-                <img src="/lovable-uploads/67211670-08f8-4491-8217-e15cdf3d054b.png" alt="Get it on Google Play" className="h-10" />
-              </a>
-              <a href="#" target="_blank" rel="noopener noreferrer">
-                <img src="/lovable-uploads/74a679b8-bac4-49d8-a9cf-93b9f89e4b96.png" alt="Download on the App Store" className="h-10" />
-              </a>
+          <div className="flex flex-col md:flex-row justify-between mb-8">
+            <div className="mb-8 md:mb-0">
+              <h3 className="font-semibold mb-4">Download Aplikasi Kami</h3>
+              <div className="flex gap-4">
+                <a href="#" target="_blank" rel="noopener noreferrer">
+                  <img src="/lovable-uploads/67211670-08f8-4491-8217-e15cdf3d054b.png" alt="Get it on Google Play" className="h-10" />
+                </a>
+                <a href="#" target="_blank" rel="noopener noreferrer">
+                  <img src="/lovable-uploads/74a679b8-bac4-49d8-a9cf-93b9f89e4b96.png" alt="Download on the App Store" className="h-10" />
+                </a>
+              </div>
             </div>
-          </div>
 
-          <div className="mb-8">
-            <h3 className="font-semibold mb-4">Kunjungi Media Sosial Kami</h3>
-            <div className="flex gap-4">
-              <a href="#" className="text-gray-600 hover:text-primary">
-                <img src="/lovable-uploads/42c7ecd0-4323-444c-a0d5-374d9404a16e.png" alt="Instagram" className="h-6" />
-              </a>
-              <a href="#" className="text-gray-600 hover:text-primary">
-                <img src="/lovable-uploads/43efd89a-bcf3-41f9-b9d1-5a305bfd1e07.png" alt="LinkedIn" className="h-6" />
-              </a>
-              <a href="#" className="text-gray-600 hover:text-primary">
-                <img src="/lovable-uploads/4aa51a17-c4f4-426d-914d-c1e6b656ebb8.png" alt="Facebook" className="h-6" />
-              </a>
-              <a href="#" className="text-gray-600 hover:text-primary">
-                <img src="/lovable-uploads/21dbcc70-f063-4b4d-868f-91688ac39e18.png" alt="Twitter" className="h-6" />
-              </a>
-              <a href="#" className="text-gray-600 hover:text-primary">
-                <img src="/lovable-uploads/372014ce-1318-4020-bce6-260083c23cc1.png" alt="YouTube" className="h-6" />
-              </a>
-              <a href="#" className="text-gray-600 hover:text-primary">
-                <img src="/lovable-uploads/0af698e7-123a-4dc1-9c0d-9b5b80374b0f.png" alt="WhatsApp" className="h-6" />
-              </a>
-              <a href="#" className="text-gray-600 hover:text-primary">
-                <img src="/lovable-uploads/b259fde2-b8e1-43b6-84c6-0e3108840672.png" alt="TikTok" className="h-6" />
-              </a>
+            <div>
+              <h3 className="font-semibold mb-4">Kunjungi Media Sosial Kami</h3>
+              <div className="flex gap-4">
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  <Instagram className="h-6 w-6" />
+                </a>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  <Linkedin className="h-6 w-6" />
+                </a>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  <Facebook className="h-6 w-6" />
+                </a>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  <Twitter className="h-6 w-6" />
+                </a>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  <Youtube className="h-6 w-6" />
+                </a>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  <Whatsapp className="h-6 w-6" />
+                </a>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  <TiktokIcon className="h-6 w-6" />
+                </a>
+              </div>
             </div>
           </div>
 
