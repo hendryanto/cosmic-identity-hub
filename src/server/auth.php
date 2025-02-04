@@ -31,28 +31,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $stmt->execute([$data->email]);
                         $user = $stmt->fetch();
                         
-                        debug_log("Database query completed", ["userFound" => !empty($user)]);
+                        debug_log("Database query completed", [
+                            "userFound" => !empty($user),
+                            "hashedPasswordLength" => $user ? strlen($user['password']) : 0
+                        ]);
                         
-                        if ($user && password_verify($data->password, $user['password'])) {
-                            session_start();
-                            $_SESSION['user_id'] = $user['id'];
-                            $_SESSION['user_role'] = $user['role'];
-                            
-                            debug_log("Login successful", [
-                                "userId" => $user['id'],
-                                "role" => $user['role']
+                        if ($user) {
+                            // Log password details (for debugging only - remove in production!)
+                            debug_log("Password verification attempt", [
+                                "providedPassword" => $data->password,
+                                "storedHash" => $user['password'],
+                                "passwordVerified" => password_verify($data->password, $user['password'])
                             ]);
-                            
-                            echo json_encode([
-                                "success" => true,
-                                "user" => [
-                                    "id" => $user['id'],
-                                    "email" => $user['email'],
+
+                            if (password_verify($data->password, $user['password'])) {
+                                session_start();
+                                $_SESSION['user_id'] = $user['id'];
+                                $_SESSION['user_role'] = $user['role'];
+                                
+                                debug_log("Login successful", [
+                                    "userId" => $user['id'],
                                     "role" => $user['role']
-                                ]
-                            ]);
+                                ]);
+                                
+                                echo json_encode([
+                                    "success" => true,
+                                    "user" => [
+                                        "id" => $user['id'],
+                                        "email" => $user['email'],
+                                        "role" => $user['role']
+                                    ]
+                                ]);
+                            } else {
+                                debug_log("Password verification failed");
+                                http_response_code(401);
+                                echo json_encode([
+                                    "success" => false,
+                                    "error" => "Invalid credentials"
+                                ]);
+                            }
                         } else {
-                            debug_log("Invalid credentials");
+                            debug_log("User not found");
                             http_response_code(401);
                             echo json_encode([
                                 "success" => false,
