@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Instagram, Linkedin, Facebook, Twitter, Youtube, Whatsapp, TiktokIcon } from "lucide-react";
+import { Instagram, Linkedin, Facebook, Twitter, Youtube, MessageCircle, Music2 } from "lucide-react";
 
 const Footer = () => {
   const footerLinks = {
@@ -178,10 +178,10 @@ const Footer = () => {
                   <Youtube className="h-6 w-6" />
                 </a>
                 <a href="#" className="text-gray-600 hover:text-primary">
-                  <Whatsapp className="h-6 w-6" />
+                  <MessageCircle className="h-6 w-6" />
                 </a>
                 <a href="#" className="text-gray-600 hover:text-primary">
-                  <TiktokIcon className="h-6 w-6" />
+                  <Music2 className="h-6 w-6" />
                 </a>
               </div>
             </div>
