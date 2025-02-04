@@ -33,18 +33,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         
                         debug_log("Database query completed", [
                             "userFound" => !empty($user),
-                            "hashedPasswordLength" => $user ? strlen($user['password']) : 0
+                            "hashedPasswordLength" => $user ? strlen($user['password']) : 0,
+                            "emailProvided" => $data->email
                         ]);
                         
                         if ($user) {
-                            // Log password details (for debugging only - remove in production!)
-                            debug_log("Password verification attempt", [
-                                "providedPassword" => $data->password,
-                                "storedHash" => $user['password'],
-                                "passwordVerified" => password_verify($data->password, $user['password'])
+                            // Remove any potential whitespace or hidden characters
+                            $cleanPassword = trim($data->password);
+                            $cleanStoredHash = trim($user['password']);
+                            
+                            debug_log("Password verification details", [
+                                "cleanPasswordLength" => strlen($cleanPassword),
+                                "cleanStoredHashLength" => strlen($cleanStoredHash)
                             ]);
 
-                            if (password_verify($data->password, $user['password'])) {
+                            if (password_verify($cleanPassword, $cleanStoredHash)) {
                                 session_start();
                                 $_SESSION['user_id'] = $user['id'];
                                 $_SESSION['user_role'] = $user['role'];
@@ -63,7 +66,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     ]
                                 ]);
                             } else {
-                                debug_log("Password verification failed");
+                                debug_log("Password verification failed", [
+                                    "passwordVerifyResult" => false,
+                                    "passwordAlgorithm" => PASSWORD_DEFAULT
+                                ]);
                                 http_response_code(401);
                                 echo json_encode([
                                     "success" => false,
