@@ -6,6 +6,11 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 require_once 'config.php';
 
+// Debug logging function
+function debug_log($message, $data = null) {
+    error_log("Auth Debug - " . $message . ($data ? ": " . json_encode($data) : ""));
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
@@ -13,37 +18,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents("php://input"));
+    debug_log("Received request with data", $data);
     
     if (isset($data->action)) {
         switch ($data->action) {
             case 'login':
                 if (isset($data->email) && isset($data->password)) {
-                    $stmt = $pdo->prepare("SELECT id, email, role, password FROM users WHERE email = ?");
-                    $stmt->execute([$data->email]);
-                    $user = $stmt->fetch();
+                    debug_log("Attempting login for email", $data->email);
                     
-                    if ($user && password_verify($data->password, $user['password'])) {
-                        session_start();
-                        $_SESSION['user_id'] = $user['id'];
-                        $_SESSION['user_role'] = $user['role'];
+                    try {
+                        $stmt = $pdo->prepare("SELECT id, email, role, password FROM users WHERE email = ?");
+                        $stmt->execute([$data->email]);
+                        $user = $stmt->fetch();
                         
-                        echo json_encode([
-                            "success" => true,
-                            "user" => [
-                                "id" => $user['id'],
-                                "email" => $user['email'],
+                        debug_log("Database query completed", ["userFound" => !empty($user)]);
+                        
+                        if ($user && password_verify($data->password, $user['password'])) {
+                            session_start();
+                            $_SESSION['user_id'] = $user['id'];
+                            $_SESSION['user_role'] = $user['role'];
+                            
+                            debug_log("Login successful", [
+                                "userId" => $user['id'],
                                 "role" => $user['role']
-                            ]
+                            ]);
+                            
+                            echo json_encode([
+                                "success" => true,
+                                "user" => [
+                                    "id" => $user['id'],
+                                    "email" => $user['email'],
+                                    "role" => $user['role']
+                                ]
+                            ]);
+                        } else {
+                            debug_log("Invalid credentials");
+                            http_response_code(401);
+                            echo json_encode([
+                                "success" => false,
+                                "error" => "Invalid credentials"
+                            ]);
+                        }
+                    } catch (PDOException $e) {
+                        debug_log("Database error", $e->getMessage());
+                        http_response_code(500);
+                        echo json_encode([
+                            "success" => false,
+                            "error" => "Database error occurred"
                         ]);
-                    } else {
-                        http_response_code(401);
-                        echo json_encode(["error" => "Invalid credentials"]);
                     }
                 }
                 break;
 
             case 'checkAuth':
                 session_start();
+                debug_log("Checking authentication status", [
+                    "sessionExists" => isset($_SESSION['user_id']),
+                    "userRole" => $_SESSION['user_role'] ?? null
+                ]);
+                
                 if (isset($_SESSION['user_id'])) {
                     echo json_encode([
                         "authenticated" => true,
