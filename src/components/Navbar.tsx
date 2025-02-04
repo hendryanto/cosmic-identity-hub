@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Home, Info, Calendar, Shield, HeadphonesIcon, Phone, Wrench, HelpCircle, Package } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 
@@ -9,20 +9,21 @@ const Navbar = () => {
   const [showSupportDropdown, setShowSupportDropdown] = useState(false);
 
   const navItems = [
-    { name: "Home", path: "/" },
-    { name: "About Us", path: "/about" },
-    { name: "Events", path: "/events" },
-    { name: "Garansi", path: "/warranty" },
+    { name: "Home", path: "/", icon: <Home className="w-4 h-4 mr-2" /> },
+    { name: "About Us", path: "/about", icon: <Info className="w-4 h-4 mr-2" /> },
+    { name: "Events", path: "/events", icon: <Calendar className="w-4 h-4 mr-2" /> },
+    { name: "Garansi", path: "/warranty", icon: <Shield className="w-4 h-4 mr-2" /> },
     {
       name: "Support",
       path: "#",
+      icon: <HeadphonesIcon className="w-4 h-4 mr-2" />,
       subItems: [
-        { name: "Contact Us", path: "/support/contact" },
-        { name: "Service Center", path: "/support/service-center" },
-        { name: "FAQ", path: "/support/faq" },
+        { name: "Contact Us", path: "/support/contact", icon: <Phone className="w-4 h-4 mr-2" /> },
+        { name: "Service Center", path: "/support/service-center", icon: <Wrench className="w-4 h-4 mr-2" /> },
+        { name: "FAQ", path: "/support/faq", icon: <HelpCircle className="w-4 h-4 mr-2" /> },
       ],
     },
-    { name: "Products", path: "/products" },
+    { name: "Products", path: "/products", icon: <Package className="w-4 h-4 mr-2" /> },
   ];
 
   return (
@@ -44,23 +45,25 @@ const Navbar = () => {
                 item.subItems ? (
                   <div
                     key={item.name}
-                    className="relative"
+                    className="relative group"
                     onMouseEnter={() => setShowSupportDropdown(true)}
                     onMouseLeave={() => setShowSupportDropdown(false)}
                   >
-                    <button className="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                    <button className="flex items-center text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors group">
+                      {item.icon}
                       {item.name}
                     </button>
                     {showSupportDropdown && (
-                      <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                      <div className="absolute left-0 mt-0 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                         <div className="py-1">
                           {item.subItems.map((subItem) => (
                             <Link
                               key={subItem.name}
                               to={subItem.path}
-                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                               onClick={() => setShowSupportDropdown(false)}
                             >
+                              {subItem.icon}
                               {subItem.name}
                             </Link>
                           ))}
@@ -72,8 +75,9 @@ const Navbar = () => {
                   <Link
                     key={item.name}
                     to={item.path}
-                    className="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                    className="flex items-center text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
                   >
+                    {item.icon}
                     {item.name}
                   </Link>
                 )
@@ -112,16 +116,18 @@ const Navbar = () => {
             {navItems.map((item) =>
               item.subItems ? (
                 <div key={item.name} className="space-y-1">
-                  <div className="px-3 py-2 text-base font-medium text-gray-600">
+                  <div className="flex items-center px-3 py-2 text-base font-medium text-gray-600">
+                    {item.icon}
                     {item.name}
                   </div>
                   {item.subItems.map((subItem) => (
                     <Link
                       key={subItem.name}
                       to={subItem.path}
-                      className="block pl-6 py-2 text-base font-medium text-gray-600 hover:text-primary"
+                      className="flex items-center pl-6 py-2 text-base font-medium text-gray-600 hover:text-primary"
                       onClick={() => setIsOpen(false)}
                     >
+                      {subItem.icon}
                       {subItem.name}
                     </Link>
                   ))}
@@ -130,9 +136,10 @@ const Navbar = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className="text-gray-600 hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
+                  className="flex items-center text-gray-600 hover:text-primary px-3 py-2 rounded-md text-base font-medium"
                   onClick={() => setIsOpen(false)}
                 >
+                  {item.icon}
                   {item.name}
                 </Link>
               )
