@@ -5,15 +5,16 @@ import History from "../components/about/History";
 import Awards from "../components/about/Awards";
 import Career from "../components/about/Career";
 import { motion } from "framer-motion";
+import { Building2, History as HistoryIcon, Award, Users } from "lucide-react";
 
 const About = () => {
   const [activeTab, setActiveTab] = useState("corporate");
 
   const tabs = [
-    { id: "corporate", label: "Corporate" },
-    { id: "history", label: "History" },
-    { id: "awards", label: "Awards" },
-    { id: "career", label: "Career" },
+    { id: "corporate", label: "Corporate", icon: Building2 },
+    { id: "history", label: "History", icon: HistoryIcon },
+    { id: "awards", label: "Awards", icon: Award },
+    { id: "career", label: "Career", icon: Users },
   ];
 
   const renderContent = () => {
@@ -46,12 +47,13 @@ const About = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-4 font-medium transition-colors relative ${
+                  className={`py-4 px-4 font-medium transition-colors relative flex items-center gap-2 ${
                     activeTab === tab.id
                       ? "text-secondary"
                       : "text-gray-600 hover:text-gray-900"
                   }`}
                 >
+                  <tab.icon className="w-4 h-4" />
                   {tab.label}
                   {activeTab === tab.id && (
                     <motion.div
