@@ -9,8 +9,7 @@ interface User {
   role: 'superuser' | 'admin' | 'operator' | 'user';
 }
 
-// Update API_URL to use the correct path
-const API_URL = '/src/server'; // Remove http://localhost since we're using relative path
+const API_URL = '/src/server';
 
 export const login = async (credentials: LoginCredentials): Promise<User> => {
   console.log("Making login request to:", `${API_URL}/auth.php`);
@@ -26,7 +25,6 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
         action: 'login',
         ...credentials,
       }),
-      credentials: 'include',
     });
 
     console.log("Login response status:", response.status);
@@ -35,11 +33,11 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
     console.log("Login response data:", data);
 
     if (!response.ok) {
-      throw new Error(data.error || 'Login failed');
+      throw new Error(data.error || 'Invalid credentials');
     }
 
-    if (!data.success || !data.user) {
-      throw new Error('Invalid response format');
+    if (!data.success) {
+      throw new Error(data.error || 'Login failed');
     }
 
     return data.user;
@@ -48,10 +46,7 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
     if (error instanceof TypeError && error.message === "Failed to fetch") {
       throw new Error("Connection error - Unable to reach the server");
     }
-    if (error.message === "Invalid credentials") {
-      throw new Error("Invalid email or password");
-    }
-    throw new Error(error.message || "An unexpected error occurred");
+    throw error;
   }
 };
 
@@ -65,7 +60,6 @@ export const register = async (credentials: LoginCredentials): Promise<void> => 
       action: 'register',
       ...credentials,
     }),
-    credentials: 'include',
   });
 
   if (!response.ok) {

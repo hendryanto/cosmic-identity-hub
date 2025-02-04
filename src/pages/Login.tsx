@@ -21,7 +21,7 @@ const Login = () => {
     try {
       console.log("Attempting login with:", { email });
       const user = await login({ email, password });
-      console.log("Login response:", user);
+      console.log("Login successful:", user);
       
       toast({
         title: "Success",
