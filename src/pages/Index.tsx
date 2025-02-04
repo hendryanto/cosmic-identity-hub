@@ -1,15 +1,13 @@
 import Navbar from "../components/Navbar";
 import VideoSlider from "../components/VideoSlider";
-import CampaignProducts from "../components/CampaignProducts";
-import Contact from "../components/Contact";
+import Footer from "../components/Footer";
 
 const Index = () => {
   return (
     <main className="min-h-screen bg-white">
       <Navbar />
       <VideoSlider />
-      <CampaignProducts />
-      <Contact />
+      <Footer />
     </main>
   );
 };
