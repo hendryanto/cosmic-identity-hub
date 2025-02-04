@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ProductsManager from "../components/admin/ProductsManager";
 import CampaignManager from "../components/admin/CampaignManager";
+import EventsManager from "../components/admin/EventsManager";
 
 const Admin = () => {
   return (
@@ -15,6 +16,7 @@ const Admin = () => {
           <TabsList>
             <TabsTrigger value="products">Products Management</TabsTrigger>
             <TabsTrigger value="campaign">Campaign Products</TabsTrigger>
+            <TabsTrigger value="events">Events</TabsTrigger>
           </TabsList>
           
           <TabsContent value="products">
@@ -23,6 +25,10 @@ const Admin = () => {
           
           <TabsContent value="campaign">
             <CampaignManager />
+          </TabsContent>
+
+          <TabsContent value="events">
+            <EventsManager />
           </TabsContent>
         </Tabs>
       </div>
