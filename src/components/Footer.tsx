@@ -109,16 +109,16 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-white pt-16 pb-8 border-t">
+    <footer className="bg-white pt-12 pb-6 border-t">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           {Object.entries(footerLinks).map(([key, section]) => (
             <div key={key}>
-              <h3 className="font-semibold mb-4">{section.title}</h3>
-              <ul className="space-y-2">
+              <h3 className="font-semibold mb-2 text-sm">{section.title}</h3>
+              <ul className="space-y-1">
                 {section.links.map((link, index) => (
                   <li key={index}>
-                    <Link to={link.href} className="text-gray-600 hover:text-primary text-sm">
+                    <Link to={link.href} className="text-gray-600 hover:text-primary text-xs">
                       {link.name}
                     </Link>
                   </li>
@@ -128,14 +128,14 @@ const Footer = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
           {additionalSections.map((section, index) => (
             <div key={index}>
-              <h3 className="font-semibold mb-4">{section.title}</h3>
-              <ul className="space-y-2">
+              <h3 className="font-semibold mb-2 text-sm">{section.title}</h3>
+              <ul className="space-y-1">
                 {section.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
-                    <Link to={link.href} className="text-gray-600 hover:text-primary text-sm">
+                    <Link to={link.href} className="text-gray-600 hover:text-primary text-xs">
                       {link.name}
                     </Link>
                   </li>
@@ -145,53 +145,53 @@ const Footer = () => {
           ))}
         </div>
 
-        <div className="border-t pt-8">
-          <div className="flex flex-col md:flex-row justify-between mb-8">
-            <div className="mb-8 md:mb-0">
-              <h3 className="font-semibold mb-4">Download Aplikasi Kami</h3>
-              <div className="flex gap-4">
+        <div className="border-t pt-6">
+          <div className="flex flex-col md:flex-row justify-between items-start mb-6">
+            <div className="mb-6 md:mb-0">
+              <h3 className="font-semibold mb-3 text-sm">Download Aplikasi Kami</h3>
+              <div className="flex gap-2">
                 <a href="#" target="_blank" rel="noopener noreferrer">
-                  <img src="/lovable-uploads/67211670-08f8-4491-8217-e15cdf3d054b.png" alt="Get it on Google Play" className="h-10" />
+                  <img src="/lovable-uploads/432cd10c-386e-4fa9-a445-01f8e7b148b4.png" alt="Get it on Google Play" className="h-8" />
                 </a>
                 <a href="#" target="_blank" rel="noopener noreferrer">
-                  <img src="/lovable-uploads/74a679b8-bac4-49d8-a9cf-93b9f89e4b96.png" alt="Download on the App Store" className="h-10" />
+                  <img src="/lovable-uploads/432cd10c-386e-4fa9-a445-01f8e7b148b4.png" alt="Download on the App Store" className="h-8" />
                 </a>
               </div>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">Kunjungi Media Sosial Kami</h3>
-              <div className="flex gap-4">
+              <h3 className="font-semibold mb-3 text-sm">Kunjungi Media Sosial Kami</h3>
+              <div className="flex gap-3">
                 <a href="#" className="text-gray-600 hover:text-primary">
-                  <Instagram className="h-6 w-6" />
+                  <Instagram className="h-5 w-5" />
                 </a>
                 <a href="#" className="text-gray-600 hover:text-primary">
-                  <Linkedin className="h-6 w-6" />
+                  <Linkedin className="h-5 w-5" />
                 </a>
                 <a href="#" className="text-gray-600 hover:text-primary">
-                  <Facebook className="h-6 w-6" />
+                  <Facebook className="h-5 w-5" />
                 </a>
                 <a href="#" className="text-gray-600 hover:text-primary">
-                  <Twitter className="h-6 w-6" />
+                  <Twitter className="h-5 w-5" />
                 </a>
                 <a href="#" className="text-gray-600 hover:text-primary">
-                  <Youtube className="h-6 w-6" />
+                  <Youtube className="h-5 w-5" />
                 </a>
                 <a href="#" className="text-gray-600 hover:text-primary">
-                  <MessageCircle className="h-6 w-6" />
+                  <MessageCircle className="h-5 w-5" />
                 </a>
                 <a href="#" className="text-gray-600 hover:text-primary">
-                  <Music2 className="h-6 w-6" />
+                  <Music2 className="h-5 w-5" />
                 </a>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap justify-between items-center pt-8 border-t">
+          <div className="flex flex-wrap justify-between items-center pt-4 border-t">
             <div className="flex items-center space-x-4 mb-4 md:mb-0">
-              <img src="/lovable-uploads/7b1f6793-4b5e-47ba-858d-1c55aa05ac49.png" alt="Cosmos Logo" className="h-8" />
+              <img src="/lovable-uploads/7b1f6793-4b5e-47ba-858d-1c55aa05ac49.png" alt="Cosmos Logo" className="h-6" />
             </div>
-            <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+            <div className="flex flex-wrap gap-4 text-xs text-gray-600">
               <Link to="/privacy-policy" className="hover:text-primary">Kebijakan Privasi</Link>
               <Link to="/cookie-policy" className="hover:text-primary">Kebijakan Cookie</Link>
               <Link to="/terms" className="hover:text-primary">Syarat dan Ketentuan</Link>
@@ -200,7 +200,7 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="text-center text-sm text-gray-600 mt-8">
+          <div className="text-center text-xs text-gray-600 mt-4">
             Hak Cipta © 2025 COSMOS. Hak cipta dilindungi Undang-Undang.
           </div>
         </div>
