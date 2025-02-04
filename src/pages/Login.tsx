@@ -24,11 +24,10 @@ const Login = () => {
       console.log("Login response:", user);
       
       toast({
-        title: "Login successful",
-        description: "Welcome back!",
+        title: "Success",
+        description: "Login successful! Welcome back.",
       });
 
-      // Redirect based on user role
       if (user.role === 'superuser' || user.role === 'admin' || user.role === 'operator') {
         navigate("/admin");
       } else {
@@ -37,26 +36,11 @@ const Login = () => {
     } catch (error: any) {
       console.error("Login error:", error);
       
-      // Handle different error scenarios
-      if (error.message === "Failed to fetch") {
-        toast({
-          title: "Connection Error",
-          description: "Unable to connect to the server. Please check your internet connection.",
-          variant: "destructive",
-        });
-      } else if (error.message === "Invalid credentials") {
-        toast({
-          title: "Authentication Failed",
-          description: "Invalid email or password. Please try again.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Login Error",
-          description: error.message || "An unexpected error occurred. Please try again.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Login Failed",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
