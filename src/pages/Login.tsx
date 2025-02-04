@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { login } from "@/services/authService";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -34,13 +34,29 @@ const Login = () => {
       } else {
         navigate("/");
       }
-    } catch (error) {
-      console.error("Login failed:", error);
-      toast({
-        title: "Login failed",
-        description: "Invalid credentials",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      console.error("Login error:", error);
+      
+      // Handle different error scenarios
+      if (error.message === "Failed to fetch") {
+        toast({
+          title: "Connection Error",
+          description: "Unable to connect to the server. Please check your internet connection.",
+          variant: "destructive",
+        });
+      } else if (error.message === "Invalid credentials") {
+        toast({
+          title: "Authentication Failed",
+          description: "Invalid email or password. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login Error",
+          description: error.message || "An unexpected error occurred. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
