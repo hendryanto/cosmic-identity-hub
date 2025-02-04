@@ -10,19 +10,26 @@ import { useToast } from "@/components/ui/use-toast";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    
     try {
+      console.log("Attempting login with:", { email });
       const user = await login({ email, password });
-      console.log("Login successful:", user);
+      console.log("Login response:", user);
+      
       toast({
         title: "Login successful",
         description: "Welcome back!",
       });
-      if (user.role === "admin") {
+
+      // Redirect based on user role
+      if (user.role === 'superuser' || user.role === 'admin' || user.role === 'operator') {
         navigate("/admin");
       } else {
         navigate("/");
@@ -34,6 +41,8 @@ const Login = () => {
         description: "Invalid credentials",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -53,6 +62,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -63,10 +73,11 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
         </CardContent>
