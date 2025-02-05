@@ -12,6 +12,7 @@ import { Textarea } from "../ui/textarea";
 import { useToast } from "../ui/use-toast";
 
 interface EventForm {
+  id?: number;  // Added id as optional since new events won't have an id
   title: string;
   description: string;
   date: string;
@@ -53,7 +54,9 @@ const EventsManager = () => {
       const data = await response.json();
       console.log('Event saved:', data);
       
-      setEvents(prev => [...prev, form]);
+      // Update the events array with the new event including its id from the response
+      const newEvent = { ...form, id: data.id };
+      setEvents(prev => [...prev, newEvent]);
       setForm(initialForm);
       
       toast({
@@ -73,6 +76,11 @@ const EventsManager = () => {
   const handleDelete = async (index: number) => {
     try {
       const eventToDelete = events[index];
+      // Only proceed with deletion if we have an id
+      if (!eventToDelete.id) {
+        throw new Error('Event ID not found');
+      }
+
       const response = await fetch(`http://localhost/src/server/events.php?id=${eventToDelete.id}`, {
         method: 'DELETE',
         credentials: 'include'
