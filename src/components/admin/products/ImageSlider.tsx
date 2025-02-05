@@ -1,39 +1,33 @@
-import { useState } from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../../ui/carousel";
+} from "@/components/ui/carousel";
 
 interface ImageSliderProps {
   images: string[];
 }
 
 export const ImageSlider = ({ images }: ImageSliderProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  if (images.length === 0) return null;
+  if (!images.length) return null;
 
   return (
-    <Carousel
-      className="w-full max-w-xs mx-auto"
-      setApi={(api) => {
-        api?.on("select", () => {
-          setCurrentIndex(api.selectedScrollSnap());
-        });
-      }}
-    >
+    <Carousel className="w-full max-w-xl mx-auto">
       <CarouselContent>
         {images.map((image, index) => (
           <CarouselItem key={index}>
             <div className="p-1">
-              <div className="flex aspect-square items-center justify-center p-6 relative">
+              <div className="aspect-square relative overflow-hidden rounded-xl">
                 <img
                   src={image}
                   alt={`Product image ${index + 1}`}
-                  className="w-full h-full object-cover rounded-md"
+                  className="object-cover w-full h-full"
+                  onError={(e) => {
+                    console.error(`Error loading image: ${image}`);
+                    e.currentTarget.src = '/placeholder.svg';
+                  }}
                 />
               </div>
             </div>
