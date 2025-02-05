@@ -65,6 +65,54 @@ const mockProducts: Product[] = [
     warranty: "2 years official warranty",
     manual: "https://cosmos.id/manuals/stand-fan.pdf",
     images: ["/placeholder.svg"]
+  },
+  {
+    id: 3,
+    name: "Coffee Maker",
+    description: "Premium coffee maker with timer",
+    category: "Kitchen Appliances",
+    price: "Rp 799.000",
+    features: ["Programmable timer", "Keep warm plate", "Auto shut-off"],
+    whatsInTheBox: ["Coffee maker", "Filter basket", "Glass carafe", "Measuring spoon"],
+    warranty: "1 year official warranty",
+    manual: "https://cosmos.id/manuals/coffee-maker.pdf",
+    images: ["/placeholder.svg"]
+  },
+  {
+    id: 4,
+    name: "Air Purifier",
+    description: "HEPA filter air purifier for clean air",
+    category: "Home Appliances",
+    price: "Rp 1.299.000",
+    features: ["HEPA filter", "Air quality sensor", "Silent operation"],
+    whatsInTheBox: ["Air purifier", "HEPA filter", "Remote control", "Manual"],
+    warranty: "2 years official warranty",
+    manual: "https://cosmos.id/manuals/air-purifier.pdf",
+    images: ["/placeholder.svg"]
+  },
+  {
+    id: 5,
+    name: "Blender",
+    description: "High-power blender for smooth blending",
+    category: "Kitchen Appliances",
+    price: "Rp 499.000",
+    features: ["Multiple speed settings", "Ice crushing", "Safety lock"],
+    whatsInTheBox: ["Blender base", "Jar", "Lid", "Manual"],
+    warranty: "1 year official warranty",
+    manual: "https://cosmos.id/manuals/blender.pdf",
+    images: ["/placeholder.svg"]
+  },
+  {
+    id: 6,
+    name: "Water Dispenser",
+    description: "Hot and cold water dispenser",
+    category: "Home Appliances",
+    price: "Rp 899.000",
+    features: ["Hot and cold water", "Child safety lock", "Energy efficient"],
+    whatsInTheBox: ["Water dispenser", "Drip tray", "Manual"],
+    warranty: "1 year official warranty",
+    manual: "https://cosmos.id/manuals/water-dispenser.pdf",
+    images: ["/placeholder.svg"]
   }
 ];
 
