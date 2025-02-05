@@ -36,6 +36,7 @@ const CampaignManager = () => {
     console.log("Adding campaign product:", currentProduct);
 
     try {
+      console.log("Making request to:", `${SERVER_URL}/src/server/campaign.php`);
       const response = await fetch(`${SERVER_URL}/src/server/campaign.php`, {
         method: 'POST',
         headers: {

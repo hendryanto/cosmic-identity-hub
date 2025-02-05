@@ -55,6 +55,7 @@ const ProductsManager = () => {
     console.log("Submitting product:", form);
     
     try {
+      console.log("Making request to:", `${SERVER_URL}/src/server/products.php`);
       const response = await fetch(`${SERVER_URL}/src/server/products.php`, {
         method: 'POST',
         headers: {
