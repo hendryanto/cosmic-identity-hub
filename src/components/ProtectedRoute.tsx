@@ -13,17 +13,36 @@ const ProtectedRoute = ({ element, allowedRoles = [] }: ProtectedRouteProps) => 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('http://localhost/src/server/auth.php', {
+        console.log("Checking authentication status...");
+        const response = await fetch('/src/server/auth.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({ action: 'checkAuth' }),
         });
-        const data = await response.json();
-        
+
+        console.log("Auth check response status:", response.status);
+        const responseText = await response.text();
+        console.log("Auth check raw response:", responseText);
+
+        let data;
+        try {
+          data = JSON.parse(responseText);
+          console.log("Auth check parsed data:", data);
+        } catch (e) {
+          console.error("JSON parse error in auth check:", e);
+          throw new Error(`Invalid JSON response from auth check: ${responseText}`);
+        }
+
         setIsAuthenticated(data.authenticated);
         setUserRole(data.role);
+        
+        console.log("Authentication state updated:", {
+          isAuthenticated: data.authenticated,
+          userRole: data.role
+        });
       } catch (error) {
         console.error('Auth check failed:', error);
         setIsAuthenticated(false);
@@ -35,17 +54,21 @@ const ProtectedRoute = ({ element, allowedRoles = [] }: ProtectedRouteProps) => 
   }, []);
 
   if (isAuthenticated === null) {
+    console.log("Authentication check in progress...");
     return <div>Loading...</div>;
   }
 
   if (!isAuthenticated) {
+    console.log("User not authenticated, redirecting to login...");
     return <Navigate to="/login" replace />;
   }
 
   if (allowedRoles.length > 0 && userRole && !allowedRoles.includes(userRole)) {
+    console.log("User role not authorized:", userRole);
     return <Navigate to="/" replace />;
   }
 
+  console.log("Access granted, rendering protected content");
   return element;
 };
 

@@ -29,7 +29,6 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
 
     console.log("Login response status:", response.status);
     
-    // First try to get the response as text to debug any potential issues
     const responseText = await response.text();
     console.log("Raw response text:", responseText);
     
@@ -57,23 +56,5 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
   } catch (error: any) {
     console.error("Login error in service:", error);
     throw new Error(error.message || 'An unexpected error occurred during login');
-  }
-};
-
-export const register = async (credentials: LoginCredentials): Promise<void> => {
-  const response = await fetch(`${API_URL}/auth.php`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({
-      action: 'register',
-      ...credentials,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Registration failed');
   }
 };
