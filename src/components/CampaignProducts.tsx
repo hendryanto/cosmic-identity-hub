@@ -53,7 +53,7 @@ const CampaignProducts = () => {
             >
               <div className="relative h-64">
                 <img
-                  src={product.image}
+                  src={product.images[0]} // Updated to use first image from images array
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />

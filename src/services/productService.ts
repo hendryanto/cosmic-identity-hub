@@ -48,11 +48,11 @@ const mockProducts: Product[] = [
     description: "Smart rice cooker with multiple cooking modes",
     category: "Kitchen Appliances",
     price: "Rp 599.000",
-    features: "Multiple cooking modes,Digital display,Keep warm function",
-    whatsInTheBox: "Rice cooker,Measuring cup,Spatula,Steam basket",
+    features: ["Multiple cooking modes", "Digital display", "Keep warm function"],
+    whatsInTheBox: ["Rice cooker", "Measuring cup", "Spatula", "Steam basket"],
     warranty: "1 year official warranty",
     manual: "https://cosmos.id/manuals/rice-cooker.pdf",
-    image: "/placeholder.svg"
+    images: ["/placeholder.svg"]
   },
   {
     id: 2,
@@ -60,11 +60,11 @@ const mockProducts: Product[] = [
     description: "Powerful and quiet stand fan",
     category: "Home Appliances",
     price: "Rp 299.000",
-    features: "3 speed settings,Oscillation,Height adjustment",
-    whatsInTheBox: "Fan base,Stand pole,Fan head,Assembly manual",
+    features: ["3 speed settings", "Oscillation", "Height adjustment"],
+    whatsInTheBox: ["Fan base", "Stand pole", "Fan head", "Assembly manual"],
     warranty: "2 years official warranty",
     manual: "https://cosmos.id/manuals/stand-fan.pdf",
-    image: "/placeholder.svg"
+    images: ["/placeholder.svg"]
   }
 ];
 

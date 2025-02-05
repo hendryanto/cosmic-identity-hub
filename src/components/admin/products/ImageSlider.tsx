@@ -19,8 +19,11 @@ export const ImageSlider = ({ images }: ImageSliderProps) => {
   return (
     <Carousel
       className="w-full max-w-xs mx-auto"
-      currentIndex={currentIndex}
-      onSelect={setCurrentIndex}
+      setApi={(api) => {
+        api?.on("select", () => {
+          setCurrentIndex(api.selectedScrollSnap());
+        });
+      }}
     >
       <CarouselContent>
         {images.map((image, index) => (
