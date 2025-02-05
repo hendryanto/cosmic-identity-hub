@@ -12,44 +12,50 @@ interface ImageUploadProps {
 }
 
 export const ImageUpload = ({ onUpload, existingImages }: ImageUploadProps) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const { toast } = useToast();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFiles(e.target.files);
     }
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
-
-    const formData = new FormData();
-    formData.append('image', selectedFile);
+    if (!selectedFiles) return;
 
     try {
-      console.log('Uploading image to:', `${SERVER_URL}/src/server/upload.php`);
-      const response = await fetch(`${SERVER_URL}/src/server/upload.php`, {
-        method: 'POST',
-        body: formData,
-      });
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const formData = new FormData();
+        formData.append('image', selectedFiles[i]);
 
-      if (!response.ok) throw new Error('Upload failed');
+        console.log('Uploading image:', selectedFiles[i].name);
+        const response = await fetch(`${SERVER_URL}/src/server/upload.php`, {
+          method: 'POST',
+          body: formData,
+        });
 
-      const data = await response.json();
-      console.log('Image uploaded successfully:', data);
-      onUpload(data.imageUrl);
-      setSelectedFile(null);
+        if (!response.ok) throw new Error('Upload failed');
+
+        const data = await response.json();
+        console.log('Image uploaded successfully:', data);
+        onUpload(data.imageUrl);
+      }
+
+      setSelectedFiles(null);
+      // Clear the input
+      const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (input) input.value = '';
       
       toast({
         title: "Success",
-        description: "Image uploaded successfully",
+        description: "Images uploaded successfully",
       });
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Error uploading images:', error);
       toast({
         title: "Error",
-        description: "Failed to upload image. Please try again.",
+        description: "Failed to upload images. Please try again.",
         variant: "destructive",
       });
     }
@@ -63,13 +69,14 @@ export const ImageUpload = ({ onUpload, existingImages }: ImageUploadProps) => {
           <Input
             type="file"
             accept="image/*"
+            multiple
             onChange={handleFileSelect}
             className="flex-1"
           />
           <Button 
             type="button"
             onClick={handleUpload}
-            disabled={!selectedFile}
+            disabled={!selectedFiles}
           >
             Upload
           </Button>

@@ -19,7 +19,24 @@ try {
     $file = $_FILES['image'];
     $fileName = uniqid() . '-' . basename($file['name']);
     $uploadDir = '../public/uploads/';
+    
+    // Create directory if it doesn't exist
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    
     $uploadPath = $uploadDir . $fileName;
+
+    // Validate file type
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!in_array($file['type'], $allowedTypes)) {
+        throw new Exception('Invalid file type. Only JPG, PNG and GIF are allowed.');
+    }
+
+    // Validate file size (5MB max)
+    if ($file['size'] > 5 * 1024 * 1024) {
+        throw new Exception('File too large. Maximum size is 5MB.');
+    }
 
     if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
         throw new Exception('Failed to move uploaded file');

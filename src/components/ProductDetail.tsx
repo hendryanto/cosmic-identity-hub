@@ -1,6 +1,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "./ui/button";
 import { FileDown } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface ProductDetailProps {
   product: {
@@ -10,12 +17,37 @@ interface ProductDetailProps {
     whatsInTheBox: string[];
     warranty: string;
     manual: string;
+    images: string[];
   };
 }
 
 const ProductDetail = ({ product }: ProductDetailProps) => {
   return (
     <div className="container mx-auto px-4 py-8">
+      {product.images && product.images.length > 0 && (
+        <div className="mb-8">
+          <Carousel className="w-full max-w-xl mx-auto">
+            <CarouselContent>
+              {product.images.map((image, index) => (
+                <CarouselItem key={index}>
+                  <div className="p-1">
+                    <div className="aspect-square relative overflow-hidden rounded-xl">
+                      <img
+                        src={image}
+                        alt={`${product.name} - Image ${index + 1}`}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
+      )}
+
       <h1 className="text-3xl font-bold mb-6">{product.name}</h1>
       <p className="text-gray-600 mb-8">{product.description}</p>
 
