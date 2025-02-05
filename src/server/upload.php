@@ -16,7 +16,7 @@ try {
 
     $file = $_FILES['image'];
     $fileName = uniqid() . '-' . basename($file['name']);
-    $uploadDir = '../public/lovable-uploads/';
+    $uploadDir = '../public/uploads/';
     
     // Create directory if it doesn't exist
     if (!file_exists($uploadDir)) {
@@ -44,7 +44,7 @@ try {
     }
 
     // Return the correct path for frontend use
-    $imageUrl = '/lovable-uploads/' . $fileName;
+    $imageUrl = '/uploads/' . $fileName;
 
     echo json_encode([
         'success' => true,
