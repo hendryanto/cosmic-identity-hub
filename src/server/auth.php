@@ -1,8 +1,9 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Credentials: true");
 
 require_once 'config.php';
 
@@ -33,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         
                         debug_log("Database query completed", [
                             "userFound" => !empty($user),
-                            "hashedPasswordLength" => $user ? strlen($user['password']) : 0,
                             "emailProvided" => $data->email
                         ]);
                         
@@ -43,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $cleanStoredHash = trim($user['password']);
                             
                             debug_log("Password verification details", [
-                                "cleanPasswordLength" => strlen($cleanPassword),
-                                "cleanStoredHashLength" => strlen($cleanStoredHash)
+                                "providedPassword" => $cleanPassword,
+                                "storedHash" => $cleanStoredHash
                             ]);
 
                             if (password_verify($cleanPassword, $cleanStoredHash)) {
@@ -54,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 
                                 debug_log("Login successful", [
                                     "userId" => $user['id'],
-                                    "role" => $user['role']
+                                    "role" => $user['role'],
+                                    "sessionId" => session_id()
                                 ]);
                                 
                                 echo json_encode([
@@ -66,10 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     ]
                                 ]);
                             } else {
-                                debug_log("Password verification failed", [
-                                    "passwordVerifyResult" => false,
-                                    "passwordAlgorithm" => PASSWORD_DEFAULT
-                                ]);
+                                debug_log("Password verification failed");
                                 http_response_code(401);
                                 echo json_encode([
                                     "success" => false,

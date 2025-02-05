@@ -21,7 +21,7 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include', // Important: This enables sending cookies
+      credentials: 'include',
       body: JSON.stringify({
         action: 'login',
         ...credentials,
@@ -30,14 +30,17 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
 
     console.log("Login response status:", response.status);
     
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Server error response:", errorData);
+      throw new Error(errorData.error || 'Invalid credentials');
+    }
+
     const data = await response.json();
     console.log("Login response data:", data);
 
-    if (!response.ok) {
-      throw new Error(data.error || 'Invalid credentials');
-    }
-
     if (!data.success) {
+      console.error("Login unsuccessful:", data.error);
       throw new Error(data.error || 'Login failed');
     }
 
