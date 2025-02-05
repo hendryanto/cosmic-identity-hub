@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { ArrowRight } from "lucide-react";
-import { Product, getMockCampaignProducts } from "../services/productService";
+import { Product, getCampaignProducts } from "../services/productService";
 import { useToast } from "./ui/use-toast";
 
 const CampaignProducts = () => {
@@ -12,7 +12,7 @@ const CampaignProducts = () => {
   useEffect(() => {
     const fetchCampaignProducts = async () => {
       try {
-        const campaignProducts = getMockCampaignProducts();
+        const campaignProducts = await getCampaignProducts();
         console.log('Fetched campaign products:', campaignProducts);
         setProducts(campaignProducts);
       } catch (error) {
@@ -53,7 +53,7 @@ const CampaignProducts = () => {
             >
               <div className="relative h-64">
                 <img
-                  src={product.images[0]} // Updated to use first image from images array
+                  src={product.images[0]}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
