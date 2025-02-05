@@ -18,28 +18,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents("php://input"));
-    debug_log("Received request with data", $data);
+    // Get the raw POST data
+    $rawData = file_get_contents("php://input");
+    debug_log("Raw request data", $rawData);
     
-    if (isset($data->action)) {
-        switch ($data->action) {
+    // Decode JSON data
+    $data = json_decode($rawData, true);
+    debug_log("Decoded request data", $data);
+    
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "error" => "Invalid JSON data: " . json_last_error_msg()
+        ]);
+        exit();
+    }
+    
+    if (isset($data['action'])) {
+        switch ($data['action']) {
             case 'login':
-                if (isset($data->email) && isset($data->password)) {
-                    debug_log("Attempting login for email", $data->email);
+                if (isset($data['email']) && isset($data['password'])) {
+                    debug_log("Attempting login for email", $data['email']);
                     
                     try {
                         $stmt = $pdo->prepare("SELECT id, email, role, password FROM users WHERE email = ?");
-                        $stmt->execute([$data->email]);
+                        $stmt->execute([$data['email']]);
                         $user = $stmt->fetch();
                         
                         debug_log("Database query completed", [
                             "userFound" => !empty($user),
-                            "emailProvided" => $data->email
+                            "emailProvided" => $data['email']
                         ]);
                         
                         if ($user) {
                             // Remove any potential whitespace or hidden characters
-                            $cleanPassword = trim($data->password);
+                            $cleanPassword = trim($data['password']);
                             $cleanStoredHash = trim($user['password']);
                             
                             debug_log("Password verification details", [
@@ -66,22 +80,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         "role" => $user['role']
                                     ]
                                 ]);
-                            } else {
-                                debug_log("Password verification failed");
-                                http_response_code(401);
-                                echo json_encode([
-                                    "success" => false,
-                                    "error" => "Invalid credentials"
-                                ]);
+                                exit();
                             }
-                        } else {
-                            debug_log("User not found");
-                            http_response_code(401);
-                            echo json_encode([
-                                "success" => false,
-                                "error" => "Invalid credentials"
-                            ]);
                         }
+                        
+                        http_response_code(401);
+                        echo json_encode([
+                            "success" => false,
+                            "error" => "Invalid credentials"
+                        ]);
+                        exit();
                     } catch (PDOException $e) {
                         debug_log("Database error", $e->getMessage());
                         http_response_code(500);
@@ -89,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             "success" => false,
                             "error" => "Database error occurred"
                         ]);
+                        exit();
                     }
                 }
                 break;
@@ -183,4 +192,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+// If we get here, something went wrong
+http_response_code(400);
+echo json_encode([
+    "success" => false,
+    "error" => "Invalid request"
+]);
 ?>

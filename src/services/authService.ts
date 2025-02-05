@@ -12,8 +12,7 @@ interface User {
 const API_URL = '/src/server';
 
 export const login = async (credentials: LoginCredentials): Promise<User> => {
-  console.log("Making login request to:", `${API_URL}/auth.php`);
-  console.log("With credentials:", { email: credentials.email });
+  console.log("Attempting login with:", { email: credentials.email });
   
   try {
     const response = await fetch(`${API_URL}/auth.php`, {
@@ -30,13 +29,24 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
 
     console.log("Login response status:", response.status);
     
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Server error response:", errorData);
-      throw new Error(errorData.error || 'Invalid credentials');
+    // First try to get the response as text
+    const responseText = await response.text();
+    console.log("Raw response:", responseText);
+    
+    // Try to parse it as JSON
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      console.error("JSON parse error:", e);
+      throw new Error(`Invalid server response: ${responseText}`);
     }
 
-    const data = await response.json();
+    if (!response.ok) {
+      console.error("Server error response:", data);
+      throw new Error(data.error || 'Invalid credentials');
+    }
+
     console.log("Login response data:", data);
 
     if (!data.success) {
