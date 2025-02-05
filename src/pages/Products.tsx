@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   ChefHat, Utensils, Flame, Coffee, Fan, Waves, 
   Beef, Timer, Box, Wind, Droplet, Zap, Lightbulb
 } from "lucide-react";
 import { Product, getMockProductsByCategory } from "../services/productService";
 import { useToast } from "../components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 
 const Products = () => {
   const [kitchenProducts, setKitchenProducts] = useState<Product[]>([]);
@@ -17,7 +18,6 @@ const Products = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // Using mock data for now
         const kitchen = getMockProductsByCategory('Kitchen Appliances');
         const home = getMockProductsByCategory('Home Appliances');
         
@@ -47,7 +47,7 @@ const Products = () => {
       "Rice Cooker": <ChefHat className="w-12 h-12" />,
       "Coffee Maker": <Coffee className="w-12 h-12" />,
       "Fan": <Fan className="w-12 h-12" />,
-      // ... keep existing code (remaining icon mappings)
+      "Stand Fan": <Fan className="w-12 h-12" />,
       "Induction Cooker": <Flame className="w-12 h-12" />,
       "Juicer": <Waves className="w-12 h-12" />,
       "Mixer": <Timer className="w-12 h-12" />,
@@ -65,18 +65,36 @@ const Products = () => {
 
   const renderProductGrid = (products: Product[]) => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {products.map((product, index) => (
-        <Card key={index} className="hover:shadow-lg transition-shadow">
+      {products.map((product) => (
+        <Card key={product.id} className="hover:shadow-lg transition-shadow">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               {getIconForProduct(product.name)}
             </div>
             <CardTitle className="text-xl">{product.name}</CardTitle>
+            <CardDescription className="text-primary font-semibold">
+              {product.price}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-center text-gray-600">
-              Click to view details
-            </p>
+            <p className="text-gray-600 mb-4">{product.description}</p>
+            <div className="space-y-2">
+              <h4 className="font-semibold">Features:</h4>
+              <ul className="list-disc list-inside text-sm text-gray-600">
+                {product.features.map((feature, index) => (
+                  <li key={index}>{feature}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-4">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => window.open(product.manual, "_blank")}
+              >
+                View Details
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ))}
@@ -84,10 +102,13 @@ const Products = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="container mx-auto pt-24 px-4">
-        <h1 className="text-3xl font-bold text-center mb-8">Our Products</h1>
+      <div className="container mx-auto pt-24 px-4 pb-16">
+        <h1 className="text-4xl font-bold text-center mb-2">Our Products</h1>
+        <p className="text-gray-600 text-center mb-8">
+          Discover our range of high-quality home and kitchen appliances
+        </p>
         
         <Tabs defaultValue="kitchen" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-8">
