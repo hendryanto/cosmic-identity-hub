@@ -16,11 +16,16 @@ try {
 
     $file = $_FILES['image'];
     $fileName = uniqid() . '-' . basename($file['name']);
-    $uploadDir = '../public/uploads/';
+    
+    // Define the upload directory path relative to the server root
+    $uploadDir = '../../public/uploads/';
     
     // Create directory if it doesn't exist
     if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+        if (!mkdir($uploadDir, 0777, true)) {
+            throw new Exception('Failed to create upload directory');
+        }
+        chmod($uploadDir, 0777);
     }
     
     $uploadPath = $uploadDir . $fileName;
@@ -36,9 +41,6 @@ try {
         throw new Exception('File too large. Maximum size is 10MB.');
     }
 
-    // Ensure proper permissions
-    chmod($uploadDir, 0777);
-    
     if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
         throw new Exception('Failed to move uploaded file. Error: ' . error_get_last()['message']);
     }
