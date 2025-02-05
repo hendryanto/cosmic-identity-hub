@@ -4,8 +4,8 @@ export interface Product {
   description: string;
   category: string;
   price: string;
-  features: string;
-  whatsInTheBox: string;
+  features: string[];
+  whatsInTheBox: string[];
   warranty: string;
   manual: string;
   images: string[];
