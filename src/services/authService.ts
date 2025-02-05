@@ -29,25 +29,13 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
 
     console.log("Login response status:", response.status);
     
-    // First try to get the response as text
-    const responseText = await response.text();
-    console.log("Raw response:", responseText);
-    
-    // Try to parse it as JSON
-    let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch (e) {
-      console.error("JSON parse error:", e);
-      throw new Error(`Invalid server response: ${responseText}`);
-    }
+    const data = await response.json();
+    console.log("Login response data:", data);
 
     if (!response.ok) {
       console.error("Server error response:", data);
       throw new Error(data.error || 'Invalid credentials');
     }
-
-    console.log("Login response data:", data);
 
     if (!data.success) {
       console.error("Login unsuccessful:", data.error);

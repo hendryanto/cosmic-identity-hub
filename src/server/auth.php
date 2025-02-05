@@ -7,7 +7,6 @@ header("Access-Control-Allow-Credentials: true");
 
 require_once 'config.php';
 
-// Debug logging function
 function debug_log($message, $data = null) {
     error_log("Auth Debug - " . $message . ($data ? ": " . json_encode($data) : ""));
 }
@@ -106,17 +105,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     "userRole" => $_SESSION['user_role'] ?? null
                 ]);
                 
-                if (isset($_SESSION['user_id'])) {
-                    echo json_encode([
-                        "authenticated" => true,
-                        "role" => $_SESSION['user_role']
-                    ]);
-                } else {
-                    echo json_encode([
-                        "authenticated" => false,
-                        "role" => null
-                    ]);
-                }
+                echo json_encode([
+                    "authenticated" => isset($_SESSION['user_id']),
+                    "role" => $_SESSION['user_role'] ?? null
+                ]);
                 break;
 
             case 'getUsers':
