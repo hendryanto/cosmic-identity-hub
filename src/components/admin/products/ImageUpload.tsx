@@ -20,6 +20,19 @@ export const ImageUpload = ({ onUpload, existingImages }: ImageUploadProps) => {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      // Validate file sizes before setting
+      const files = Array.from(e.target.files);
+      const oversizedFiles = files.filter(file => file.size > 10 * 1024 * 1024);
+      
+      if (oversizedFiles.length > 0) {
+        toast({
+          title: "Error",
+          description: "Some files are too large. Maximum size is 10MB per file.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       setSelectedFiles(e.target.files);
       console.log("Files selected:", e.target.files.length);
     }
@@ -45,15 +58,20 @@ export const ImageUpload = ({ onUpload, existingImages }: ImageUploadProps) => {
         });
 
         if (!response.ok) {
-          throw new Error(`Upload failed for ${selectedFiles[i].name}`);
+          const errorData = await response.json();
+          throw new Error(errorData.message || `Upload failed for ${selectedFiles[i].name}`);
         }
 
         const data = await response.json();
         console.log('Image uploaded successfully:', data);
-        onUpload(data.imageUrl);
         
-        uploadedCount++;
-        setUploadProgress((uploadedCount / totalFiles) * 100);
+        if (data.success && data.imageUrl) {
+          onUpload(data.imageUrl);
+          uploadedCount++;
+          setUploadProgress((uploadedCount / totalFiles) * 100);
+        } else {
+          throw new Error(data.message || 'Upload failed');
+        }
       }
 
       setSelectedFiles(null);
@@ -63,13 +81,13 @@ export const ImageUpload = ({ onUpload, existingImages }: ImageUploadProps) => {
       
       toast({
         title: "Success",
-        description: `${totalFiles} image${totalFiles > 1 ? 's' : ''} uploaded successfully`,
+        description: `${uploadedCount} image${uploadedCount > 1 ? 's' : ''} uploaded successfully`,
       });
     } catch (error) {
       console.error('Error uploading images:', error);
       toast({
         title: "Error",
-        description: "Failed to upload images. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to upload images. Please try again.",
         variant: "destructive",
       });
     } finally {

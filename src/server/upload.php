@@ -9,8 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-require_once 'config.php';
-
 try {
     if (!isset($_FILES['image'])) {
         throw new Exception('No image file uploaded');
@@ -18,7 +16,7 @@ try {
 
     $file = $_FILES['image'];
     $fileName = uniqid() . '-' . basename($file['name']);
-    $uploadDir = '../public/uploads/';
+    $uploadDir = '../public/lovable-uploads/';
     
     // Create directory if it doesn't exist
     if (!file_exists($uploadDir)) {
@@ -33,16 +31,20 @@ try {
         throw new Exception('Invalid file type. Only JPG, PNG and GIF are allowed.');
     }
 
-    // Validate file size (5MB max)
-    if ($file['size'] > 5 * 1024 * 1024) {
-        throw new Exception('File too large. Maximum size is 5MB.');
+    // Increase max file size to 10MB
+    if ($file['size'] > 10 * 1024 * 1024) {
+        throw new Exception('File too large. Maximum size is 10MB.');
     }
 
+    // Ensure proper permissions
+    chmod($uploadDir, 0777);
+    
     if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
-        throw new Exception('Failed to move uploaded file');
+        throw new Exception('Failed to move uploaded file. Error: ' . error_get_last()['message']);
     }
 
-    $imageUrl = '/uploads/' . $fileName;
+    // Return the correct path for frontend use
+    $imageUrl = '/lovable-uploads/' . $fileName;
 
     echo json_encode([
         'success' => true,
@@ -50,6 +52,7 @@ try {
         'message' => 'Image uploaded successfully'
     ]);
 } catch (Exception $e) {
+    error_log('Upload error: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,
