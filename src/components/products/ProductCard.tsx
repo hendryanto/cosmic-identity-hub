@@ -10,19 +10,26 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
+  const hasValidImage = product.images && product.images[0] && product.images[0] !== '/placeholder.svg';
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader className="text-center">
-        {product.images && product.images[0] ? (
+        {hasValidImage ? (
           <div className="flex justify-center mb-4">
             <img 
               src={product.images[0]} 
               alt={product.name}
               className="w-48 h-48 object-contain"
+              onError={(e) => {
+                console.log('Image failed to load:', product.images[0]);
+                const target = e.target as HTMLImageElement;
+                target.src = '/placeholder.svg';
+              }}
             />
           </div>
         ) : (
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-4 text-gray-400">
             {getIconForProduct(product.name)}
           </div>
         )}
