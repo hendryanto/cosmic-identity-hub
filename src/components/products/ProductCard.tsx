@@ -4,35 +4,48 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ProductDetail from "../ProductDetail";
 import { getIconForProduct } from "../../utils/productIcons";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const hasValidImage = product.images && product.images[0] && product.images[0] !== '/placeholder.svg';
+  const [imageError, setImageError] = useState(false);
+  
+  // Function to get a fallback image URL
+  const getFallbackImage = () => {
+    return "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=500";
+  };
+
+  // Function to handle image URL
+  const getImageUrl = () => {
+    if (imageError || !product.images || !product.images[0]) {
+      return getFallbackImage();
+    }
+    return product.images[0];
+  };
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader className="text-center">
-        {hasValidImage ? (
-          <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-4">
+          {!imageError ? (
             <img 
-              src={product.images[0]} 
+              src={getImageUrl()}
               alt={product.name}
               className="w-48 h-48 object-contain"
-              onError={(e) => {
-                console.log('Image failed to load:', product.images[0]);
-                const target = e.target as HTMLImageElement;
-                target.src = '/placeholder.svg';
+              onError={() => {
+                console.log('Image failed to load:', product.images?.[0]);
+                setImageError(true);
               }}
             />
-          </div>
-        ) : (
-          <div className="flex justify-center mb-4 text-gray-400">
-            {getIconForProduct(product.name)}
-          </div>
-        )}
+          ) : (
+            <div className="flex justify-center items-center w-48 h-48 bg-gray-100 text-gray-400">
+              {getIconForProduct(product.name)}
+            </div>
+          )}
+        </div>
         <CardTitle className="text-xl">{product.name}</CardTitle>
         <CardDescription className="text-primary font-semibold">
           {product.price}

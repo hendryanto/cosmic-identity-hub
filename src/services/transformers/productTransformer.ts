@@ -9,47 +9,52 @@ export const transformProducts = (data: any[]): Product[] => {
   return data.map((item: any) => {
     console.log('Transforming product item:', item);
     
-    // Ensure image URL is properly formatted
-    let images = [];
+    // Handle image URLs
+    let images: string[] = [];
     if (item.image) {
-      // If image is a string, convert it to an array
-      const imageUrl = item.image.startsWith('http') ? 
+      const imageUrl = item.image.startsWith('http') || item.image.startsWith('/') ? 
         item.image : 
-        `${window.location.origin}${item.image}`;
-      console.log('Processed image URL:', imageUrl);
+        `/${item.image}`;
       images = [imageUrl];
-    } else {
-      // Fallback image
-      images = ['/placeholder.svg'];
+      console.log('Processed image URL:', imageUrl);
     }
 
-    // Ensure features and whatsInTheBox are arrays
-    let features = [];
+    // Ensure features is an array
+    let features: string[] = [];
     try {
-      features = Array.isArray(item.features) ? item.features :
-                typeof item.features === 'string' ? JSON.parse(item.features) : [];
+      if (Array.isArray(item.features)) {
+        features = item.features;
+      } else if (typeof item.features === 'string') {
+        features = JSON.parse(item.features);
+      }
     } catch (error) {
       console.warn('Error parsing features:', error);
+      features = ['No features available'];
     }
     
-    let whatsInTheBox = [];
+    // Ensure whatsInTheBox is an array
+    let whatsInTheBox: string[] = [];
     try {
-      whatsInTheBox = Array.isArray(item.whatsInTheBox) ? item.whatsInTheBox :
-                      typeof item.whatsInTheBox === 'string' ? JSON.parse(item.whatsInTheBox) : [];
+      if (Array.isArray(item.whatsInTheBox)) {
+        whatsInTheBox = item.whatsInTheBox;
+      } else if (typeof item.whatsInTheBox === 'string') {
+        whatsInTheBox = JSON.parse(item.whatsInTheBox);
+      }
     } catch (error) {
       console.warn('Error parsing whatsInTheBox:', error);
+      whatsInTheBox = ['Package contents not available'];
     }
 
     const transformedProduct = {
       id: item.id || 0,
-      name: item.name || '',
-      description: item.description || '',
-      category: item.category || '',
-      price: item.price || '',
+      name: item.name || 'Unnamed Product',
+      description: item.description || 'No description available',
+      category: item.category || 'Uncategorized',
+      price: item.price || '0',
       features: features,
       whatsInTheBox: whatsInTheBox,
-      warranty: item.warranty || '',
-      manual: item.manual || '',
+      warranty: item.warranty || 'No warranty information available',
+      manual: item.manual || '#',
       images: images,
     };
 
