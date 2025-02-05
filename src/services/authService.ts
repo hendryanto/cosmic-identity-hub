@@ -29,8 +29,19 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
 
     console.log("Login response status:", response.status);
     
-    const data = await response.json();
-    console.log("Login response data:", data);
+    // First try to get the response as text to debug any potential issues
+    const responseText = await response.text();
+    console.log("Raw response text:", responseText);
+    
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      console.error("JSON parse error:", e);
+      throw new Error(`Server response is not valid JSON: ${responseText}`);
+    }
+
+    console.log("Parsed response data:", data);
 
     if (!response.ok) {
       console.error("Server error response:", data);
@@ -45,10 +56,7 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
     return data.user;
   } catch (error: any) {
     console.error("Login error in service:", error);
-    if (error instanceof TypeError && error.message === "Failed to fetch") {
-      throw new Error("Connection error - Unable to reach the server");
-    }
-    throw error;
+    throw new Error(error.message || 'An unexpected error occurred during login');
   }
 };
 
