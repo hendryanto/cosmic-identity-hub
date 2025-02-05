@@ -18,11 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get the raw POST data
     $rawData = file_get_contents("php://input");
     debug_log("Raw request data", $rawData);
     
-    // Decode JSON data
     $data = json_decode($rawData, true);
     debug_log("Decoded request data", $data);
     
@@ -52,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ]);
                         
                         if ($user) {
-                            // Remove any potential whitespace or hidden characters
                             $cleanPassword = trim($data['password']);
                             $cleanStoredHash = trim($user['password']);
                             
@@ -193,7 +190,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// If we get here, something went wrong
 http_response_code(400);
 echo json_encode([
     "success" => false,
