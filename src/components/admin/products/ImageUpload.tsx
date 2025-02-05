@@ -3,6 +3,8 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { ImageSlider } from "./ImageSlider";
+import { SERVER_URL } from "../../../config/serverConfig";
+import { useToast } from "../../ui/use-toast";
 
 interface ImageUploadProps {
   onUpload: (imageUrl: string) => void;
@@ -11,6 +13,7 @@ interface ImageUploadProps {
 
 export const ImageUpload = ({ onUpload, existingImages }: ImageUploadProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { toast } = useToast();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -25,7 +28,8 @@ export const ImageUpload = ({ onUpload, existingImages }: ImageUploadProps) => {
     formData.append('image', selectedFile);
 
     try {
-      const response = await fetch('/api/upload', {
+      console.log('Uploading image to:', `${SERVER_URL}/src/server/upload.php`);
+      const response = await fetch(`${SERVER_URL}/src/server/upload.php`, {
         method: 'POST',
         body: formData,
       });
@@ -33,10 +37,21 @@ export const ImageUpload = ({ onUpload, existingImages }: ImageUploadProps) => {
       if (!response.ok) throw new Error('Upload failed');
 
       const data = await response.json();
+      console.log('Image uploaded successfully:', data);
       onUpload(data.imageUrl);
       setSelectedFile(null);
+      
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully",
+      });
     } catch (error) {
       console.error('Error uploading image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
