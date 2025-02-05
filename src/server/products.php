@@ -36,9 +36,9 @@ try {
             exit();
         }
         
-        // Prepare features and whatsInTheBox as JSON strings
-        $features = isset($data['features']) ? json_encode($data['features']) : '[]';
-        $whatsInTheBox = isset($data['whatsInTheBox']) ? json_encode($data['whatsInTheBox']) : '[]';
+        // Ensure features and whatsInTheBox are arrays before encoding
+        $features = isset($data['features']) ? (array)$data['features'] : [];
+        $whatsInTheBox = isset($data['whatsInTheBox']) ? (array)$data['whatsInTheBox'] : [];
         
         // Insert new product
         $stmt = $pdo->prepare("
@@ -58,8 +58,8 @@ try {
             ':description' => $data['description'] ?? '',
             ':category' => $data['category'],
             ':price' => $data['price'],
-            ':features' => $features,
-            ':whatsInTheBox' => $whatsInTheBox,
+            ':features' => json_encode($features),
+            ':whatsInTheBox' => json_encode($whatsInTheBox),
             ':warranty' => $data['warranty'] ?? '',
             ':manual' => $data['manual'] ?? '',
             ':image' => $data['images'][0] ?? null
@@ -87,10 +87,22 @@ try {
         
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // Parse JSON strings back to arrays
+        // Properly decode JSON strings from database
         foreach ($products as &$product) {
-            $product['features'] = json_decode($product['features'] ?? '[]');
-            $product['whatsInTheBox'] = json_decode($product['whatsInTheBox'] ?? '[]');
+            $features = $product['features'];
+            $whatsInTheBox = $product['whatsInTheBox'];
+            
+            // Ensure valid JSON before decoding
+            $product['features'] = json_decode($features) ?: [];
+            $product['whatsInTheBox'] = json_decode($whatsInTheBox) ?: [];
+            
+            // Convert to arrays if they're objects
+            if (is_object($product['features'])) {
+                $product['features'] = (array)$product['features'];
+            }
+            if (is_object($product['whatsInTheBox'])) {
+                $product['whatsInTheBox'] = (array)$product['whatsInTheBox'];
+            }
         }
         
         echo json_encode([

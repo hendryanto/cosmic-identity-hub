@@ -14,19 +14,7 @@ export const getProducts = async (): Promise<Product[]> => {
       throw new Error(result.message || 'Failed to fetch products');
     }
     
-    // Transform the data to match our Product type
-    return result.data.map((item: any) => ({
-      id: item.id,
-      name: item.name,
-      description: item.description || '',
-      category: item.category || '',
-      price: item.price || '',
-      features: item.features ? JSON.parse(item.features) : [],
-      whatsInTheBox: item.whatsInTheBox ? JSON.parse(item.whatsInTheBox) : [],
-      warranty: item.warranty || '',
-      manual: item.manual || '',
-      images: item.image ? [item.image] : ['/placeholder.svg'], // Convert single image to array
-    }));
+    return transformProducts(result.data);
   } catch (error) {
     console.error('Error fetching products:', error);
     throw error;
@@ -46,19 +34,7 @@ export const getProductsByCategory = async (category: string): Promise<Product[]
       throw new Error(result.message || 'Failed to fetch products by category');
     }
     
-    // Transform the data to match our Product type
-    return result.data.map((item: any) => ({
-      id: item.id,
-      name: item.name,
-      description: item.description || '',
-      category: item.category || '',
-      price: item.price || '',
-      features: item.features ? JSON.parse(item.features) : [],
-      whatsInTheBox: item.whatsInTheBox ? JSON.parse(item.whatsInTheBox) : [],
-      warranty: item.warranty || '',
-      manual: item.manual || '',
-      images: item.image ? [item.image] : ['/placeholder.svg'], // Convert single image to array
-    }));
+    return transformProducts(result.data);
   } catch (error) {
     console.error('Error fetching products by category:', error);
     throw error;
@@ -78,23 +54,27 @@ export const getCampaignProducts = async (): Promise<Product[]> => {
       throw new Error(result.message || 'Failed to fetch campaign products');
     }
     
-    // Transform the data to match our Product type
-    return result.data.map((item: any) => ({
-      id: item.id,
-      name: item.name,
-      description: item.description || '',
-      category: item.category || '',
-      price: item.price || '',
-      features: item.features ? JSON.parse(item.features) : [],
-      whatsInTheBox: item.whatsInTheBox ? JSON.parse(item.whatsInTheBox) : [],
-      warranty: item.warranty || '',
-      manual: item.manual || '',
-      images: item.image ? [item.image] : ['/placeholder.svg'], // Convert single image to array
-    }));
+    return transformProducts(result.data);
   } catch (error) {
     console.error('Error fetching campaign products:', error);
     throw error;
   }
+};
+
+// Helper function to transform API data to Product type
+const transformProducts = (data: any[]): Product[] => {
+  return data.map((item: any) => ({
+    id: item.id,
+    name: item.name,
+    description: item.description || '',
+    category: item.category || '',
+    price: item.price || '',
+    features: Array.isArray(item.features) ? item.features : [],
+    whatsInTheBox: Array.isArray(item.whatsInTheBox) ? item.whatsInTheBox : [],
+    warranty: item.warranty || '',
+    manual: item.manual || '',
+    images: item.image ? [item.image] : ['/placeholder.svg'],
+  }));
 };
 
 // Mock data for development until the API is ready
