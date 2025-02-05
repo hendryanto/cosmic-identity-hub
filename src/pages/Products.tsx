@@ -3,12 +3,18 @@ import Navbar from "../components/Navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   ChefHat, Utensils, Flame, Coffee, Fan, Waves, 
   Beef, Timer, Box, Wind, Droplet, Zap, Lightbulb
 } from "lucide-react";
 import { Product, getProductsByCategory } from "../services/productService";
 import { useToast } from "../components/ui/use-toast";
 import { Button } from "@/components/ui/button";
+import ProductDetail from "../components/ProductDetail";
 
 const Products = () => {
   const [kitchenProducts, setKitchenProducts] = useState<Product[]>([]);
@@ -68,9 +74,19 @@ const Products = () => {
       {products.map((product) => (
         <Card key={product.id} className="hover:shadow-lg transition-shadow">
           <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              {getIconForProduct(product.name)}
-            </div>
+            {product.images && product.images[0] ? (
+              <div className="flex justify-center mb-4">
+                <img 
+                  src={product.images[0]} 
+                  alt={product.name}
+                  className="w-48 h-48 object-contain"
+                />
+              </div>
+            ) : (
+              <div className="flex justify-center mb-4">
+                {getIconForProduct(product.name)}
+              </div>
+            )}
             <CardTitle className="text-xl">{product.name}</CardTitle>
             <CardDescription className="text-primary font-semibold">
               {product.price}
@@ -81,19 +97,22 @@ const Products = () => {
             <div className="space-y-2">
               <h4 className="font-semibold">Features:</h4>
               <ul className="list-disc list-inside text-sm text-gray-600">
-                {product.features.map((feature, index) => (
+                {product.features.slice(0, 3).map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
               </ul>
             </div>
             <div className="mt-4">
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => window.open(product.manual, "_blank")}
-              >
-                View Details
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">
+                    View Details
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <ProductDetail product={product} />
+                </DialogContent>
+              </Dialog>
             </div>
           </CardContent>
         </Card>

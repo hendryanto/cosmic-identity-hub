@@ -21,6 +21,21 @@ try {
             throw new Exception('Missing required fields');
         }
         
+        // Check if product name already exists
+        $checkStmt = $pdo->prepare("SELECT COUNT(*) as count FROM products WHERE name = ?");
+        $checkStmt->execute([$data['name']]);
+        $exists = $checkStmt->fetch(PDO::FETCH_ASSOC)['count'] > 0;
+        
+        if ($exists) {
+            http_response_code(400);
+            echo json_encode([
+                "success" => false,
+                "message" => "A product with this name already exists",
+                "error" => true
+            ]);
+            exit();
+        }
+        
         // Prepare features and whatsInTheBox as JSON strings
         $features = isset($data['features']) ? json_encode($data['features']) : '[]';
         $whatsInTheBox = isset($data['whatsInTheBox']) ? json_encode($data['whatsInTheBox']) : '[]';
@@ -47,7 +62,7 @@ try {
             ':whatsInTheBox' => $whatsInTheBox,
             ':warranty' => $data['warranty'] ?? '',
             ':manual' => $data['manual'] ?? '',
-            ':image' => $data['images'][0] ?? null // Take the first image if available
+            ':image' => $data['images'][0] ?? null
         ]);
         
         $productId = $pdo->lastInsertId();
@@ -71,6 +86,12 @@ try {
         }
         
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Parse JSON strings back to arrays
+        foreach ($products as &$product) {
+            $product['features'] = json_decode($product['features'] ?? '[]');
+            $product['whatsInTheBox'] = json_decode($product['whatsInTheBox'] ?? '[]');
+        }
         
         echo json_encode([
             "success" => true,
