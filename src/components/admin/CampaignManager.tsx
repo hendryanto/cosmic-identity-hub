@@ -10,6 +10,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { useToast } from "../ui/use-toast";
+import { SERVER_URL } from "../../config/serverConfig";
 
 interface CampaignProduct {
   name: string;
@@ -35,7 +36,7 @@ const CampaignManager = () => {
     console.log("Adding campaign product:", currentProduct);
 
     try {
-      const response = await fetch('http://localhost/src/server/campaign.php', {
+      const response = await fetch(`${SERVER_URL}/src/server/campaign.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

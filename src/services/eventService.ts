@@ -1,9 +1,8 @@
 import { Event } from '../types/event';
-
-const API_URL = 'http://localhost/src/server'; // Update this with your actual server URL
+import { SERVER_URL } from '../config/serverConfig';
 
 export const getEvents = async (): Promise<Event[]> => {
-  const response = await fetch(`${API_URL}/events.php`);
+  const response = await fetch(`${SERVER_URL}/src/server/events.php`);
   if (!response.ok) {
     throw new Error('Failed to fetch events');
   }
@@ -11,7 +10,7 @@ export const getEvents = async (): Promise<Event[]> => {
 };
 
 export const createEvent = async (event: Omit<Event, 'id'>): Promise<Event> => {
-  const response = await fetch(`${API_URL}/events.php`, {
+  const response = await fetch(`${SERVER_URL}/src/server/events.php`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -26,7 +25,7 @@ export const createEvent = async (event: Omit<Event, 'id'>): Promise<Event> => {
 };
 
 export const deleteEvent = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/events.php?id=${id}`, {
+  const response = await fetch(`${SERVER_URL}/src/server/events.php?id=${id}`, {
     method: 'DELETE',
   });
 

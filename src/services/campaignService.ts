@@ -1,9 +1,8 @@
 import { CampaignProduct } from '../types/campaign';
-
-const API_URL = 'http://localhost/src/server'; // Update this with your actual server URL
+import { SERVER_URL } from '../config/serverConfig';
 
 export const getCampaignProducts = async (): Promise<CampaignProduct[]> => {
-  const response = await fetch(`${API_URL}/campaign.php`);
+  const response = await fetch(`${SERVER_URL}/src/server/campaign.php`);
   if (!response.ok) {
     throw new Error('Failed to fetch campaign products');
   }
@@ -11,7 +10,7 @@ export const getCampaignProducts = async (): Promise<CampaignProduct[]> => {
 };
 
 export const createCampaignProduct = async (product: Omit<CampaignProduct, 'id'>): Promise<CampaignProduct> => {
-  const response = await fetch(`${API_URL}/campaign.php`, {
+  const response = await fetch(`${SERVER_URL}/src/server/campaign.php`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -26,7 +25,7 @@ export const createCampaignProduct = async (product: Omit<CampaignProduct, 'id'>
 };
 
 export const deleteCampaignProduct = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/campaign.php?id=${id}`, {
+  const response = await fetch(`${SERVER_URL}/src/server/campaign.php?id=${id}`, {
     method: 'DELETE',
   });
 

@@ -10,6 +10,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { useToast } from "../ui/use-toast";
+import { SERVER_URL } from "../../config/serverConfig";
 
 interface EventForm {
   id?: number;  // Added id as optional since new events won't have an id
@@ -38,7 +39,7 @@ const EventsManager = () => {
     console.log("Submitting event:", form);
 
     try {
-      const response = await fetch('http://localhost/src/server/events.php', {
+      const response = await fetch(`${SERVER_URL}/src/server/events.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +82,7 @@ const EventsManager = () => {
         throw new Error('Event ID not found');
       }
 
-      const response = await fetch(`http://localhost/src/server/events.php?id=${eventToDelete.id}`, {
+      const response = await fetch(`${SERVER_URL}/src/server/events.php?id=${eventToDelete.id}`, {
         method: 'DELETE',
         credentials: 'include'
       });

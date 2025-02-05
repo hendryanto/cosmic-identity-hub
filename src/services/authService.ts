@@ -1,3 +1,5 @@
+import { SERVER_URL } from '../config/serverConfig';
+
 interface LoginCredentials {
   email: string;
   password: string;
@@ -9,13 +11,11 @@ interface User {
   role: 'superuser' | 'admin' | 'operator' | 'user';
 }
 
-const API_URL = '/src/server';
-
 export const login = async (credentials: LoginCredentials): Promise<User> => {
   console.log("Attempting login with:", { email: credentials.email });
   
   try {
-    const response = await fetch(`${API_URL}/auth.php`, {
+    const response = await fetch(`${SERVER_URL}/src/server/auth.php`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

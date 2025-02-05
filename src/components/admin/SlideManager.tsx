@@ -9,6 +9,7 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useToast } from "../ui/use-toast";
+import { SERVER_URL } from "../../config/serverConfig";
 
 interface Slide {
   image: string;
@@ -60,7 +61,7 @@ const SlideManager = () => {
     console.log("Saving slides:", slides);
 
     try {
-      const response = await fetch('http://localhost/src/server/slides.php', {
+      const response = await fetch(`${SERVER_URL}/src/server/slides.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

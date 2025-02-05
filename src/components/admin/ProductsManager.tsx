@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { useToast } from "../ui/use-toast";
+import { SERVER_URL } from "../../config/serverConfig";
 
 const categories = [
   "Kitchen Appliances",
@@ -54,7 +55,7 @@ const ProductsManager = () => {
     console.log("Submitting product:", form);
     
     try {
-      const response = await fetch('http://localhost/src/server/products.php', {
+      const response = await fetch(`${SERVER_URL}/src/server/products.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
