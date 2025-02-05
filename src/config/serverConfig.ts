@@ -2,7 +2,7 @@
 const getServerUrl = () => {
   // For development, you might want to use environment variables
   // but for now we'll use the production URL
-  return 'http://34.101.240.126';
+  return 'http://192.168.1.15';
 };
 
 export const SERVER_URL = getServerUrl();
