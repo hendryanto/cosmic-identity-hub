@@ -16,7 +16,7 @@ try {
 
     $file = $_FILES['image'];
     $fileName = uniqid() . '-' . basename($file['name']);
-    $uploadDir = '../public/uploads/';
+    $uploadDir = '../../public/uploads/';
     
     // Create directory if it doesn't exist
     if (!file_exists($uploadDir)) {
