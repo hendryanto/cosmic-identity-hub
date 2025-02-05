@@ -7,7 +7,26 @@ export const getProducts = async (): Promise<Product[]> => {
     if (!response.ok) {
       throw new Error('Failed to fetch products');
     }
-    return response.json();
+    const result = await response.json();
+    console.log('API Response:', result);
+    
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to fetch products');
+    }
+    
+    // Transform the data to match our Product type
+    return result.data.map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description || '',
+      category: item.category || '',
+      price: item.price || '',
+      features: item.features ? JSON.parse(item.features) : [],
+      whatsInTheBox: item.whatsInTheBox ? JSON.parse(item.whatsInTheBox) : [],
+      warranty: item.warranty || '',
+      manual: item.manual || '',
+      images: item.image ? [item.image] : ['/placeholder.svg'], // Convert single image to array
+    }));
   } catch (error) {
     console.error('Error fetching products:', error);
     throw error;
@@ -20,7 +39,26 @@ export const getProductsByCategory = async (category: string): Promise<Product[]
     if (!response.ok) {
       throw new Error('Failed to fetch products by category');
     }
-    return response.json();
+    const result = await response.json();
+    console.log('API Response for category:', category, result);
+    
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to fetch products by category');
+    }
+    
+    // Transform the data to match our Product type
+    return result.data.map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description || '',
+      category: item.category || '',
+      price: item.price || '',
+      features: item.features ? JSON.parse(item.features) : [],
+      whatsInTheBox: item.whatsInTheBox ? JSON.parse(item.whatsInTheBox) : [],
+      warranty: item.warranty || '',
+      manual: item.manual || '',
+      images: item.image ? [item.image] : ['/placeholder.svg'], // Convert single image to array
+    }));
   } catch (error) {
     console.error('Error fetching products by category:', error);
     throw error;
@@ -33,7 +71,26 @@ export const getCampaignProducts = async (): Promise<Product[]> => {
     if (!response.ok) {
       throw new Error('Failed to fetch campaign products');
     }
-    return response.json();
+    const result = await response.json();
+    console.log('API Response for campaign products:', result);
+    
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to fetch campaign products');
+    }
+    
+    // Transform the data to match our Product type
+    return result.data.map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description || '',
+      category: item.category || '',
+      price: item.price || '',
+      features: item.features ? JSON.parse(item.features) : [],
+      whatsInTheBox: item.whatsInTheBox ? JSON.parse(item.whatsInTheBox) : [],
+      warranty: item.warranty || '',
+      manual: item.manual || '',
+      images: item.image ? [item.image] : ['/placeholder.svg'], // Convert single image to array
+    }));
   } catch (error) {
     console.error('Error fetching campaign products:', error);
     throw error;
@@ -116,7 +173,7 @@ const mockProducts: Product[] = [
   }
 ];
 
-// Use mock data for development
+// Use these for development when API is not available
 export const getMockProducts = () => mockProducts;
 export const getMockProductsByCategory = (category: string) => 
   mockProducts.filter(p => p.category === category);
