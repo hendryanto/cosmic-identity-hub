@@ -63,10 +63,13 @@ export const ImageUpload = ({ onUpload, existingImages }: ImageUploadProps) => {
         }
 
         const data = await response.json();
-        console.log('Image uploaded successfully:', data);
+        console.log('Upload response:', data);
         
         if (data.success && data.imageUrl) {
-          onUpload(data.imageUrl);
+          // Construct the full URL for the image
+          const fullImageUrl = `${SERVER_URL}${data.imageUrl}`;
+          console.log('Full image URL:', fullImageUrl);
+          onUpload(fullImageUrl);
           uploadedCount++;
           setUploadProgress((uploadedCount / totalFiles) * 100);
         } else {

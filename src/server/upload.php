@@ -16,7 +16,7 @@ try {
 
     $file = $_FILES['image'];
     $fileName = uniqid() . '-' . basename($file['name']);
-    $uploadDir = '../uploads/';
+    $uploadDir = '../public/uploads/';
     
     // Create directory if it doesn't exist
     if (!file_exists($uploadDir)) {
@@ -43,7 +43,7 @@ try {
         throw new Exception('Failed to move uploaded file. Error: ' . error_get_last()['message']);
     }
 
-    // Return the correct path for frontend use
+    // Return the URL path that will work with the frontend
     $imageUrl = '/uploads/' . $fileName;
 
     echo json_encode([
