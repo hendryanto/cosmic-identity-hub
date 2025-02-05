@@ -8,6 +8,7 @@ import {
 } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { useToast } from "../ui/use-toast";
 
 interface Slide {
   image: string;
@@ -33,6 +34,7 @@ const initialSlide: Slide = {
 
 const SlideManager = () => {
   const [slides, setSlides] = useState<Slide[]>([initialSlide]);
+  const { toast } = useToast();
 
   const handleAddSlide = () => {
     setSlides([...slides, { ...initialSlide }]);
@@ -53,10 +55,39 @@ const SlideManager = () => {
     setSlides(newSlides);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Saving slides:", slides);
-    // Here you would typically save to your backend
+
+    try {
+      const response = await fetch('http://localhost/src/server/slides.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ slides }),
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save slides');
+      }
+
+      const data = await response.json();
+      console.log('Slides saved:', data);
+      
+      toast({
+        title: "Success",
+        description: "Slides saved successfully",
+      });
+    } catch (error) {
+      console.error('Error saving slides:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save slides. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

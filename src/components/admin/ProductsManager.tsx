@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useToast } from "../ui/use-toast";
 
 const categories = [
   "Kitchen Appliances",
@@ -46,11 +47,43 @@ const initialForm: ProductForm = {
 
 const ProductsManager = () => {
   const [form, setForm] = useState<ProductForm>(initialForm);
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Submitting product:", form);
-    // Here you would typically save to your backend
+    
+    try {
+      const response = await fetch('http://localhost/src/server/products.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save product');
+      }
+
+      const data = await response.json();
+      console.log('Product saved successfully:', data);
+      
+      toast({
+        title: "Success",
+        description: "Product saved successfully",
+      });
+      
+      setForm(initialForm);
+    } catch (error) {
+      console.error('Error saving product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save product. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const addFeature = () => {

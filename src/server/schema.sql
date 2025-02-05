@@ -40,3 +40,16 @@ CREATE TABLE IF NOT EXISTS campaign_products (
   image VARCHAR(255),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS slides (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  image VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  subtitle TEXT,
+  product_link VARCHAR(255),
+  cta_primary_text VARCHAR(100),
+  cta_primary_link VARCHAR(255),
+  cta_secondary_text VARCHAR(100),
+  cta_secondary_link VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

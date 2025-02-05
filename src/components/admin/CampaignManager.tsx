@@ -9,6 +9,7 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import { useToast } from "../ui/use-toast";
 
 interface CampaignProduct {
   name: string;
@@ -27,12 +28,44 @@ const initialProduct: CampaignProduct = {
 const CampaignManager = () => {
   const [products, setProducts] = useState<CampaignProduct[]>([]);
   const [currentProduct, setCurrentProduct] = useState<CampaignProduct>(initialProduct);
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Adding campaign product:", currentProduct);
-    setProducts(prev => [...prev, currentProduct]);
-    setCurrentProduct(initialProduct);
+
+    try {
+      const response = await fetch('http://localhost/src/server/campaign.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(currentProduct),
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save campaign product');
+      }
+
+      const data = await response.json();
+      console.log('Campaign product saved:', data);
+      
+      setProducts(prev => [...prev, currentProduct]);
+      setCurrentProduct(initialProduct);
+      
+      toast({
+        title: "Success",
+        description: "Campaign product saved successfully",
+      });
+    } catch (error) {
+      console.error('Error saving campaign product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save campaign product. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

@@ -32,23 +32,69 @@ const EventsManager = () => {
   const [events, setEvents] = useState<EventForm[]>([]);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Submitting event:", form);
-    setEvents(prev => [...prev, form]);
-    setForm(initialForm);
-    toast({
-      title: "Event Added",
-      description: "The event has been successfully added.",
-    });
+
+    try {
+      const response = await fetch('http://localhost/src/server/events.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save event');
+      }
+
+      const data = await response.json();
+      console.log('Event saved:', data);
+      
+      setEvents(prev => [...prev, form]);
+      setForm(initialForm);
+      
+      toast({
+        title: "Success",
+        description: "Event saved successfully",
+      });
+    } catch (error) {
+      console.error('Error saving event:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save event. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDelete = (index: number) => {
-    setEvents(prev => prev.filter((_, i) => i !== index));
-    toast({
-      title: "Event Deleted",
-      description: "The event has been successfully removed.",
-    });
+  const handleDelete = async (index: number) => {
+    try {
+      const eventToDelete = events[index];
+      const response = await fetch(`http://localhost/src/server/events.php?id=${eventToDelete.id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete event');
+      }
+
+      setEvents(prev => prev.filter((_, i) => i !== index));
+      toast({
+        title: "Success",
+        description: "Event deleted successfully",
+      });
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete event. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
