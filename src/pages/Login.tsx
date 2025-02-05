@@ -28,11 +28,15 @@ const Login = () => {
         description: "Login successful! Welcome back.",
       });
 
-      if (user.role === 'superuser' || user.role === 'admin' || user.role === 'operator') {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      // Add a small delay to ensure the session is properly set
+      setTimeout(() => {
+        if (user.role === 'superuser' || user.role === 'admin' || user.role === 'operator') {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      }, 100);
+      
     } catch (error: any) {
       console.error("Login error:", error);
       

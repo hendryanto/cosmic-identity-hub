@@ -21,6 +21,7 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include', // Important: This enables sending cookies
       body: JSON.stringify({
         action: 'login',
         ...credentials,
@@ -56,6 +57,7 @@ export const register = async (credentials: LoginCredentials): Promise<void> => 
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
     body: JSON.stringify({
       action: 'register',
       ...credentials,
