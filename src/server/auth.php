@@ -43,41 +43,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $stmt->execute([$data['email']]);
                         $user = $stmt->fetch();
                         
-                        debug_log("Database query completed", [
-                            "userFound" => !empty($user),
-                            "emailProvided" => $data['email']
-                        ]);
-                        
-                        if ($user) {
-                            $cleanPassword = trim($data['password']);
-                            $cleanStoredHash = trim($user['password']);
+                        if ($user && password_verify($data['password'], $user['password'])) {
+                            session_start();
+                            $_SESSION['user_id'] = $user['id'];
+                            $_SESSION['user_role'] = $user['role'];
                             
-                            debug_log("Password verification details", [
-                                "providedPassword" => $cleanPassword,
-                                "storedHash" => $cleanStoredHash
+                            debug_log("Login successful", [
+                                "userId" => $user['id'],
+                                "role" => $user['role']
                             ]);
-
-                            if (password_verify($cleanPassword, $cleanStoredHash)) {
-                                session_start();
-                                $_SESSION['user_id'] = $user['id'];
-                                $_SESSION['user_role'] = $user['role'];
-                                
-                                debug_log("Login successful", [
-                                    "userId" => $user['id'],
-                                    "role" => $user['role'],
-                                    "sessionId" => session_id()
-                                ]);
-                                
-                                echo json_encode([
-                                    "success" => true,
-                                    "user" => [
-                                        "id" => $user['id'],
-                                        "email" => $user['email'],
-                                        "role" => $user['role']
-                                    ]
-                                ]);
-                                exit();
-                            }
+                            
+                            echo json_encode([
+                                "success" => true,
+                                "user" => [
+                                    "id" => $user['id'],
+                                    "email" => $user['email'],
+                                    "role" => $user['role']
+                                ]
+                            ]);
+                            exit();
                         }
                         
                         http_response_code(401);
@@ -106,77 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
                 
                 echo json_encode([
+                    "success" => true,
                     "authenticated" => isset($_SESSION['user_id']),
                     "role" => $_SESSION['user_role'] ?? null
                 ]);
-                break;
-
-            case 'getUsers':
-                session_start();
-                if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'superuser') {
-                    http_response_code(403);
-                    echo json_encode(["error" => "Access denied"]);
-                    break;
-                }
-                
-                try {
-                    $stmt = $pdo->query("SELECT id, email, role, created_at FROM users");
-                    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    echo json_encode([
-                        "success" => true,
-                        "users" => $users
-                    ]);
-                } catch (PDOException $e) {
-                    http_response_code(500);
-                    echo json_encode(["error" => "Failed to fetch users"]);
-                }
-                break;
-
-            case 'updateRole':
-                session_start();
-                if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'superuser') {
-                    http_response_code(403);
-                    echo json_encode(["error" => "Access denied"]);
-                    break;
-                }
-
-                if (isset($data->userId) && isset($data->role)) {
-                    try {
-                        $stmt = $pdo->prepare("UPDATE users SET role = ? WHERE id = ?");
-                        $stmt->execute([$data->role, $data->userId]);
-                        echo json_encode([
-                            "success" => true,
-                            "message" => "Role updated successfully"
-                        ]);
-                    } catch (PDOException $e) {
-                        http_response_code(500);
-                        echo json_encode(["error" => "Failed to update role"]);
-                    }
-                }
-                break;
-
-            case 'addUser':
-                session_start();
-                if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'superuser') {
-                    http_response_code(403);
-                    echo json_encode(["error" => "Access denied"]);
-                    break;
-                }
-
-                if (isset($data->email) && isset($data->password) && isset($data->role)) {
-                    try {
-                        $hashedPassword = password_hash($data->password, PASSWORD_DEFAULT);
-                        $stmt = $pdo->prepare("INSERT INTO users (email, password, role) VALUES (?, ?, ?)");
-                        $stmt->execute([$data->email, $hashedPassword, $data->role]);
-                        echo json_encode([
-                            "success" => true,
-                            "message" => "User added successfully"
-                        ]);
-                    } catch (PDOException $e) {
-                        http_response_code(400);
-                        echo json_encode(["error" => "Failed to add user"]);
-                    }
-                }
+                exit();
                 break;
         }
     }

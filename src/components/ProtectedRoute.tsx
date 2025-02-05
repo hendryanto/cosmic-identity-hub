@@ -36,6 +36,10 @@ const ProtectedRoute = ({ element, allowedRoles = [] }: ProtectedRouteProps) => 
           throw new Error(`Invalid JSON response from auth check: ${responseText}`);
         }
 
+        if (!data.success) {
+          throw new Error(data.error || 'Authentication check failed');
+        }
+
         setIsAuthenticated(data.authenticated);
         setUserRole(data.role);
         
