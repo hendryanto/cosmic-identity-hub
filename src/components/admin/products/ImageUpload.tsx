@@ -65,10 +65,10 @@ export const ImageUpload = ({ onUpload, existingImages }: ImageUploadProps) => {
         console.log('Upload response:', data);
         
         if (data.success && data.imageUrl) {
-          // Construct the full URL for the image
-          const fullImageUrl = `${SERVER_URL}${data.imageUrl}`;
-          console.log('Full image URL:', fullImageUrl);
-          onUpload(fullImageUrl);
+          // Remove any double slashes in the URL path (except after http:)
+          const imageUrl = `${SERVER_URL}${data.imageUrl}`.replace(/([^:])\/+/g, '$1/');
+          console.log('Constructed image URL:', imageUrl);
+          onUpload(imageUrl);
           uploadedCount++;
           setUploadProgress((uploadedCount / totalFiles) * 100);
         } else {
