@@ -176,23 +176,40 @@ try {
     } else {
         // Handle GET requests
         if (isset($_GET['category'])) {
-            $stmt = $pdo->prepare("SELECT * FROM products WHERE category = ?");
+            $stmt = $pdo->prepare("
+                SELECT p.*, GROUP_CONCAT(pi.image_url) as image_urls 
+                FROM products p 
+                LEFT JOIN product_images pi ON p.id = pi.product_id 
+                WHERE p.category = ?
+                GROUP BY p.id
+            ");
             $stmt->execute([$_GET['category']]);
         } else if (isset($_GET['campaign'])) {
-            $stmt = $pdo->prepare("SELECT * FROM products WHERE is_campaign = 1");
+            $stmt = $pdo->prepare("
+                SELECT p.*, GROUP_CONCAT(pi.image_url) as image_urls 
+                FROM products p 
+                LEFT JOIN product_images pi ON p.id = pi.product_id 
+                WHERE p.is_campaign = 1
+                GROUP BY p.id
+            ");
             $stmt->execute();
         } else {
-            $stmt = $pdo->query("SELECT * FROM products");
+            $stmt = $pdo->query("
+                SELECT p.*, GROUP_CONCAT(pi.image_url) as image_urls 
+                FROM products p 
+                LEFT JOIN product_images pi ON p.id = pi.product_id 
+                GROUP BY p.id
+            ");
         }
         
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // Properly decode JSON strings from database
+        // Process each product to handle features, whatsInTheBox, and images
         foreach ($products as &$product) {
+            // Handle features and whatsInTheBox JSON decoding
             $features = $product['features'];
             $whatsInTheBox = $product['whatsInTheBox'];
             
-            // Ensure valid JSON before decoding
             $product['features'] = json_decode($features) ?: [];
             $product['whatsInTheBox'] = json_decode($whatsInTheBox) ?: [];
             
@@ -203,6 +220,20 @@ try {
             if (is_object($product['whatsInTheBox'])) {
                 $product['whatsInTheBox'] = (array)$product['whatsInTheBox'];
             }
+
+            // Handle images
+            $imageUrls = $product['image_urls'] ? explode(',', $product['image_urls']) : [];
+            unset($product['image_urls']); // Remove the concatenated string
+            
+            // If no images in product_images table, check the legacy image field
+            if (empty($imageUrls) && !empty($product['image'])) {
+                $imageUrls = [$product['image']];
+            }
+            
+            $product['images'] = $imageUrls;
+            
+            // Log for debugging
+            error_log("Product {$product['name']} images: " . print_r($product['images'], true));
         }
         
         echo json_encode([
