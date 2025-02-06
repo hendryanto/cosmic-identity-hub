@@ -108,11 +108,8 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
     reader.onload = (event) => {
       if (!event.target?.result) return;
       
-      // Create a new FabricImage instance using the correct method signature
-      FabricImage.fromURL(event.target.result.toString(), {
-        scaleX: 0.5,
-        scaleY: 0.5
-      }).then((img) => {
+      FabricImage.fromURL(event.target.result.toString(), (img) => {
+        img.scale(0.5);  // Scale the image to 50% of its original size
         canvas.add(img);
         canvas.setActiveObject(img);
         const json = canvas.toJSON();
