@@ -3,8 +3,9 @@ import { format } from "date-fns";
 import { Calendar, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import * as fabric from 'fabric';
 import { useEffect, useRef } from "react";
+
+declare const fabric: any; // This declares the global fabric object
 
 const EventDetail = () => {
   const navigate = useNavigate();
