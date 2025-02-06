@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Canvas as FabricCanvas, TEvent, Circle, Rect, Text, Image as FabricImage } from "fabric";
+import { fabric } from "fabric";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
@@ -20,14 +20,14 @@ interface EventContentEditorProps {
 
 export const EventContentEditor = ({ initialContent, onChange }: EventContentEditorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [canvas, setCanvas] = useState<FabricCanvas | null>(null);
+  const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [selectedTool, setSelectedTool] = useState<string>("select");
   const [textInput, setTextInput] = useState("");
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    const fabricCanvas = new FabricCanvas(canvasRef.current, {
+    const fabricCanvas = new fabric.Canvas(canvasRef.current, {
       width: 800,
       height: 600,
       backgroundColor: "#ffffff",
@@ -54,7 +54,7 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
 
   const addText = () => {
     if (!canvas || !textInput) return;
-    const text = new Text(textInput, {
+    const text = new fabric.Text(textInput, {
       left: 100,
       top: 100,
       fontSize: 20,
@@ -71,14 +71,14 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
     if (!canvas) return;
     
     const shape = type === "rect" 
-      ? new Rect({
+      ? new fabric.Rect({
           left: 100,
           top: 100,
           fill: "#f87171",
           width: 100,
           height: 100
         })
-      : new Circle({
+      : new fabric.Circle({
           left: 100,
           top: 100,
           fill: "#f87171",
@@ -101,26 +101,20 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!canvas || !e.target.files?.[0]) return;
     
     const reader = new FileReader();
-    reader.onload = async (event) => {
+    reader.onload = (event) => {
       if (!event.target?.result) return;
       
-      try {
-        const img = await FabricImage.fromURL(event.target.result.toString(), {
-          crossOrigin: 'anonymous'
-        });
-        
-        img.scale(0.5);
+      fabric.Image.fromURL(event.target.result.toString(), (img) => {
+        img.scale(0.5);  // Scale the image to 50% of its original size
         canvas.add(img);
         canvas.setActiveObject(img);
         const json = canvas.toJSON();
         onChange(JSON.stringify(json));
-      } catch (error) {
-        console.error('Error loading image:', error);
-      }
+      }, { crossOrigin: 'anonymous' });
     };
     reader.readAsDataURL(e.target.files[0]);
   };
