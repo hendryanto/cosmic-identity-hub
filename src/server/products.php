@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 require_once 'config.php';
@@ -12,7 +12,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 try {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+        $data = json_decode(file_get_contents("php://input"), true);
+        
+        if (!isset($data['id'])) {
+            throw new Exception('Product ID is required');
+        }
+        
+        // Delete product images first
+        $stmt = $pdo->prepare("DELETE FROM product_images WHERE product_id = ?");
+        $stmt->execute([$data['id']]);
+        
+        // Then delete the product
+        $stmt = $pdo->prepare("DELETE FROM products WHERE id = ?");
+        $stmt->execute([$data['id']]);
+        
+        if ($stmt->rowCount() === 0) {
+            throw new Exception('Product not found');
+        }
+        
+        echo json_encode([
+            "success" => true,
+            "message" => "Product deleted successfully"
+        ]);
+    }
+    else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get POST data
         $data = json_decode(file_get_contents("php://input"), true);
         

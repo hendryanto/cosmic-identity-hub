@@ -9,6 +9,8 @@ import { useToast } from "../ui/use-toast";
 import { SERVER_URL } from "../../config/serverConfig";
 import ProductForm from "./products/ProductForm";
 import { ProductFormData } from "../../types/product";
+import ProductList from "./products/ProductList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 const ProductsManager = () => {
   const { toast } = useToast();
@@ -51,10 +53,23 @@ const ProductsManager = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Add New Product</CardTitle>
+        <CardTitle>Product Management</CardTitle>
       </CardHeader>
       <CardContent>
-        <ProductForm onSubmit={handleSubmit} />
+        <Tabs defaultValue="list">
+          <TabsList>
+            <TabsTrigger value="list">Product List</TabsTrigger>
+            <TabsTrigger value="add">Add New Product</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="list">
+            <ProductList />
+          </TabsContent>
+          
+          <TabsContent value="add">
+            <ProductForm onSubmit={handleSubmit} />
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );
