@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { Calendar, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Canvas } from 'fabric/fabric-impl';
+import * as fabric from 'fabric';
 import { useEffect, useRef } from "react";
 
 const EventDetail = () => {
@@ -12,7 +12,7 @@ const EventDetail = () => {
 
   useEffect(() => {
     if (canvasRef.current) {
-      const canvas = new Canvas(canvasRef.current);
+      const canvas = new fabric.Canvas(canvasRef.current);
       canvas.setDimensions({ width: 800, height: 600 });
 
       // Example event details
