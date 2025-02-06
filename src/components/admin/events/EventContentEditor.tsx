@@ -14,7 +14,9 @@ import {
   PaintBucket,
   TextCursor,
   Palette,
-  SunDim
+  SunDim,
+  ArrowUpDown,
+  ArrowLeftRight
 } from "lucide-react";
 import {
   Select,
@@ -75,7 +77,27 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
       });
     }
 
+    // Enable object movement and modification events
     fabricCanvas.on("object:modified", () => {
+      console.log("Object modified");
+      const json = fabricCanvas.toJSON();
+      onChange(JSON.stringify(json));
+    });
+
+    fabricCanvas.on("object:moving", () => {
+      console.log("Object moving");
+      const json = fabricCanvas.toJSON();
+      onChange(JSON.stringify(json));
+    });
+
+    fabricCanvas.on("object:scaling", () => {
+      console.log("Object scaling");
+      const json = fabricCanvas.toJSON();
+      onChange(JSON.stringify(json));
+    });
+
+    fabricCanvas.on("object:rotating", () => {
+      console.log("Object rotating");
       const json = fabricCanvas.toJSON();
       onChange(JSON.stringify(json));
     });
@@ -125,18 +147,68 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
           fill: selectedColor,
           width: 100,
           height: 100,
-          opacity: parseInt(opacity) / 100
+          opacity: parseInt(opacity) / 100,
+          hasControls: true,
+          hasBorders: true,
         })
       : new fabric.Circle({
           left: 100,
           top: 100,
           fill: selectedColor,
           radius: 50,
-          opacity: parseInt(opacity) / 100
+          opacity: parseInt(opacity) / 100,
+          hasControls: true,
+          hasBorders: true,
         });
 
     canvas.add(shape);
     canvas.setActiveObject(shape);
+    const json = canvas.toJSON();
+    onChange(JSON.stringify(json));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!canvas || !e.target.files?.[0]) return;
+    console.log("Uploading image:", e.target.files[0].name);
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (!event.target?.result) return;
+      console.log("Image loaded into FileReader");
+      
+      fabric.Image.fromURL(event.target.result.toString(), (img) => {
+        console.log("Image created from URL");
+        img.scale(0.5);
+        canvas.add(img);
+        canvas.setActiveObject(img);
+        const json = canvas.toJSON();
+        onChange(JSON.stringify(json));
+      }, { crossOrigin: 'anonymous' });
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  };
+
+  const moveObject = (direction: 'up' | 'down' | 'left' | 'right') => {
+    if (!canvas) return;
+    const activeObject = canvas.getActiveObject();
+    if (!activeObject) return;
+
+    const MOVE_AMOUNT = 10;
+    switch (direction) {
+      case 'up':
+        activeObject.set('top', activeObject.top! - MOVE_AMOUNT);
+        break;
+      case 'down':
+        activeObject.set('top', activeObject.top! + MOVE_AMOUNT);
+        break;
+      case 'left':
+        activeObject.set('left', activeObject.left! - MOVE_AMOUNT);
+        break;
+      case 'right':
+        activeObject.set('left', activeObject.left! + MOVE_AMOUNT);
+        break;
+    }
+    canvas.renderAll();
     const json = canvas.toJSON();
     onChange(JSON.stringify(json));
   };
@@ -149,26 +221,6 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
       const json = canvas.toJSON();
       onChange(JSON.stringify(json));
     }
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!canvas || !e.target.files?.[0]) return;
-    
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (!event.target?.result) return;
-      
-      fabric.Image.fromURL(event.target.result.toString(), {
-        crossOrigin: 'anonymous'
-      }).then((img) => {
-        img.scale(0.5);
-        canvas.add(img);
-        canvas.setActiveObject(img);
-        const json = canvas.toJSON();
-        onChange(JSON.stringify(json));
-      });
-    };
-    reader.readAsDataURL(e.target.files[0]);
   };
 
   const updateBackgroundColor = (color: string) => {
@@ -243,12 +295,37 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
               className="hidden"
               id="image-upload"
             />
-            <Label htmlFor="image-upload" className="cursor-pointer">
-              <Button variant="outline" onClick={() => {}}>
-                <Image className="w-4 h-4 mr-2" />
-                Add Image
+            <Label htmlFor="image-upload">
+              <Button variant="outline" asChild>
+                <span className="cursor-pointer">
+                  <Image className="w-4 h-4 mr-2" />
+                  Add Image
+                </span>
               </Button>
             </Label>
+          </div>
+
+          {/* Layout Controls */}
+          <div className="flex items-center gap-2">
+            <Label>Move:</Label>
+            <div className="flex gap-1">
+              <Button size="sm" variant="outline" onClick={() => moveObject('up')}>
+                <ArrowUpDown className="w-4 h-4" />
+                Up
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => moveObject('down')}>
+                <ArrowUpDown className="w-4 h-4" />
+                Down
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => moveObject('left')}>
+                <ArrowLeftRight className="w-4 h-4" />
+                Left
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => moveObject('right')}>
+                <ArrowLeftRight className="w-4 h-4" />
+                Right
+              </Button>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
