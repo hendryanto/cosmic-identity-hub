@@ -16,18 +16,9 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "fabric": path.resolve(__dirname, "node_modules/fabric/dist/fabric.js")
     },
   },
   optimizeDeps: {
     include: ['fabric'],
-  },
-  build: {
-    commonjsOptions: {
-      include: [/fabric/, /node_modules/],
-    },
-    rollupOptions: {
-      external: ['fabric'],
-    },
   },
 }));
