@@ -24,14 +24,36 @@ const fetchSlides = async (): Promise<Slide[]> => {
   }
   const data = await response.json();
   console.log('Fetched slides:', data);
-  return data;
+  
+  // Validate and transform the data
+  if (!Array.isArray(data)) {
+    console.error('Invalid data format:', data);
+    return [];
+  }
+
+  return data.map(slide => ({
+    image: slide.image || '',
+    title: slide.title || '',
+    subtitle: slide.subtitle || '',
+    productLink: slide.productLink || '#',
+    cta: {
+      primary: {
+        text: slide.cta?.primary?.text || 'Learn More',
+        link: slide.cta?.primary?.link || '#'
+      },
+      secondary: {
+        text: slide.cta?.secondary?.text || 'View Details',
+        link: slide.cta?.secondary?.link || '#'
+      }
+    }
+  }));
 };
 
 const VideoSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
 
-  const { data: slides = [] } = useQuery({
+  const { data: slides = [], isError, error } = useQuery({
     queryKey: ['slides'],
     queryFn: fetchSlides,
   });
@@ -52,6 +74,11 @@ const VideoSlider = () => {
   const handleSlideClick = (productLink: string) => {
     navigate(productLink);
   };
+
+  if (isError) {
+    console.error('Error loading slides:', error);
+    return null;
+  }
 
   if (slides.length === 0) {
     return null;

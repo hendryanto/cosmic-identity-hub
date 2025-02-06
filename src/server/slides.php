@@ -14,7 +14,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
         $stmt = $pdo->query("SELECT * FROM slides ORDER BY created_at DESC");
-        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        $slides = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Transform the data to match the frontend structure
+        $transformedSlides = array_map(function($slide) {
+            return [
+                'image' => $slide['image'],
+                'title' => $slide['title'],
+                'subtitle' => $slide['subtitle'],
+                'productLink' => $slide['product_link'],
+                'cta' => [
+                    'primary' => [
+                        'text' => $slide['cta_primary_text'],
+                        'link' => $slide['cta_primary_link']
+                    ],
+                    'secondary' => [
+                        'text' => $slide['cta_secondary_text'],
+                        'link' => $slide['cta_secondary_link']
+                    ]
+                ]
+            ];
+        }, $slides);
+        
+        echo json_encode($transformedSlides);
         break;
         
     case 'POST':
