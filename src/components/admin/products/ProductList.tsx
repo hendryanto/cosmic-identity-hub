@@ -83,10 +83,9 @@ const ProductList = ({ onEdit }: ProductListProps) => {
         return imageUrl;
       }
       
-      // Handle relative URLs
-      // Remove any leading slashes to avoid double slashes
-      const cleanImageUrl = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-      const fullUrl = `${SERVER_URL}/${cleanImageUrl}`;
+      // Handle relative URLs by ensuring proper path construction
+      const cleanImageUrl = imageUrl.replace(/^\/+/, ''); // Remove all leading slashes
+      const fullUrl = `${SERVER_URL}/public/uploads/${cleanImageUrl}`;
       console.log('Constructed full URL:', fullUrl);
       return fullUrl;
     }

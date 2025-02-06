@@ -25,6 +25,8 @@ const ProductsManager = () => {
       const body = editingProduct ? { ...form, id: editingProduct.id } : form;
       
       console.log("Making request to:", `${SERVER_URL}/src/server/products.php`);
+      console.log("Request body:", body);
+      
       const response = await fetch(`${SERVER_URL}/src/server/products.php`, {
         method,
         headers: {
@@ -60,6 +62,7 @@ const ProductsManager = () => {
   };
 
   const handleEdit = (product: Product) => {
+    console.log("Editing product:", product);
     setEditingProduct(product);
     setActiveTab("add");
   };
