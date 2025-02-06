@@ -72,15 +72,25 @@ const ProductList = ({ onEdit }: ProductListProps) => {
 
   // Function to get image URL or fallback
   const getImageUrl = (product: Product) => {
+    console.log('Processing image for product:', product.name);
     if (product.images && product.images.length > 0) {
       const imageUrl = product.images[0];
-      // If the image URL is relative, prepend the SERVER_URL
-      if (!imageUrl.startsWith('http')) {
-        return `${SERVER_URL}${imageUrl}`;
+      console.log('Raw image URL:', imageUrl);
+      
+      // Handle absolute URLs (starting with http/https)
+      if (imageUrl.startsWith('http')) {
+        console.log('Using absolute URL:', imageUrl);
+        return imageUrl;
       }
-      return imageUrl;
+      
+      // Handle relative URLs
+      // Remove any leading slashes to avoid double slashes
+      const cleanImageUrl = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+      const fullUrl = `${SERVER_URL}/${cleanImageUrl}`;
+      console.log('Constructed full URL:', fullUrl);
+      return fullUrl;
     }
-    // Use a local placeholder image to avoid infinite loading loop
+    console.log('Using placeholder image');
     return "/placeholder.svg";
   };
 
