@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Canvas as FabricCanvas, IEvent } from "fabric";
+import { Canvas as FabricCanvas, TEvent, Circle, Rect, Text, Image as FabricImage } from "fabric";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
@@ -54,7 +54,7 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
 
   const addText = () => {
     if (!canvas || !textInput) return;
-    const text = new fabric.Text(textInput, {
+    const text = new Text(textInput, {
       left: 100,
       top: 100,
       fontSize: 20,
@@ -71,14 +71,14 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
     if (!canvas) return;
     
     const shape = type === "rect" 
-      ? new fabric.Rect({
+      ? new Rect({
           left: 100,
           top: 100,
           fill: "#f87171",
           width: 100,
           height: 100
         })
-      : new fabric.Circle({
+      : new Circle({
           left: 100,
           top: 100,
           fill: "#f87171",
@@ -108,7 +108,7 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
     reader.onload = (event) => {
       if (!event.target?.result) return;
       
-      fabric.Image.fromURL(event.target.result.toString(), (img) => {
+      FabricImage.fromURL(event.target.result.toString(), (img) => {
         img.scaleToWidth(200);
         canvas.add(img);
         canvas.setActiveObject(img);
