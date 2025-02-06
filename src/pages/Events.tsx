@@ -4,14 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Calendar } from "lucide-react";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/ui/card";
 
 interface Event {
   id: number;
@@ -22,9 +18,6 @@ interface Event {
 }
 
 const Events = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
   const { data: events = [], isLoading } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
@@ -48,39 +41,38 @@ const Events = () => {
     },
   });
 
-  const totalPages = Math.ceil(events.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentEvents = events.slice(startIndex, endIndex);
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <div className="container mx-auto pt-24 px-4">
         <div className="flex items-center gap-2 mb-8">
-          <Calendar className="h-8 w-8 text-primary" />
+          <Calendar className="h-8 w-8 text-red-500" />
           <h1 className="text-3xl font-bold">Events</h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {isLoading ? (
             <p>Loading events...</p>
           ) : (
-            currentEvents.map((event) => (
+            events.map((event) => (
               <Link key={event.id} to={`/events/${event.id}`}>
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
+                <Card className="hover:shadow-lg transition-shadow border border-gray-200">
+                  <CardHeader className="p-0">
                     <img
                       src={event.image}
                       alt={event.title}
-                      className="w-full h-48 object-cover rounded-t-lg"
+                      className="w-full h-64 object-cover"
                     />
                   </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-xl mb-2">{event.title}</CardTitle>
-                    <p className="text-gray-600 text-sm mb-2">{event.description}</p>
-                    <p className="text-primary text-sm">
-                      {new Date(event.date).toLocaleDateString()}
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
+                    <p className="text-gray-600 mb-4">{event.description}</p>
+                    <p className="text-red-500">
+                      {new Date(event.date).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                      }).split('/').join('/')}
                     </p>
                   </CardContent>
                 </Card>
@@ -88,39 +80,6 @@ const Events = () => {
             ))
           )}
         </div>
-
-        {totalPages > 1 && (
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                />
-              </PaginationItem>
-              {[...Array(totalPages)].map((_, i) => (
-                <PaginationItem key={i + 1}>
-                  <PaginationLink
-                    onClick={() => setCurrentPage(i + 1)}
-                    isActive={currentPage === i + 1}
-                  >
-                    {i + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  className={
-                    currentPage === totalPages ? "pointer-events-none opacity-50" : ""
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
       </div>
     </div>
   );

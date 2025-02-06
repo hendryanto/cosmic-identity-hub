@@ -34,21 +34,28 @@ const EventDetail = () => {
     },
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return (
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <div className="container mx-auto pt-24 px-4">
+        Loading...
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <div className="container mx-auto pt-24 px-4">
         <Button
           variant="ghost"
-          className="mb-4 flex items-center gap-2"
+          className="mb-4 flex items-center gap-2 text-red-500 hover:text-red-600"
           onClick={() => navigate("/events")}
         >
           <ArrowLeft className="h-4 w-4" /> Back to Events
         </Button>
 
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <img
             src={event?.image}
             alt={event?.title}
@@ -56,9 +63,13 @@ const EventDetail = () => {
           />
           <div className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Calendar className="h-5 w-5 text-primary" />
-              <span className="text-primary">
-                {event?.date && new Date(event.date).toLocaleDateString()}
+              <Calendar className="h-5 w-5 text-red-500" />
+              <span className="text-red-500">
+                {event?.date && new Date(event.date).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric'
+                }).split('/').join('/')}
               </span>
             </div>
             <h1 className="text-3xl font-bold mb-4">{event?.title}</h1>
