@@ -176,14 +176,18 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
       if (!event.target?.result) return;
       console.log("Image loaded into FileReader");
       
-      fabric.Image.fromURL(event.target.result.toString(), (img) => {
+      fabric.Image.fromURL(event.target.result.toString(), {
+        crossOrigin: 'anonymous',
+        scaleX: 0.5,
+        scaleY: 0.5,
+        objectCaching: false,
+      }).then((img) => {
         console.log("Image created from URL");
-        img.scale(0.5);
         canvas.add(img);
         canvas.setActiveObject(img);
         const json = canvas.toJSON();
         onChange(JSON.stringify(json));
-      }, { crossOrigin: 'anonymous' });
+      });
     };
     reader.readAsDataURL(e.target.files[0]);
   };
