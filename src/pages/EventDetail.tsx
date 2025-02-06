@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { Calendar, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { useEffect, useRef } from "react";
 
 const EventDetail = () => {
