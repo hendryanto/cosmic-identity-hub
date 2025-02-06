@@ -46,7 +46,7 @@ try {
     }
 
     // Return only the relative path that will be appended to SERVER_URL
-    $imageUrl = '/uploads/' . $fileName;
+    $imageUrl = '/public/uploads/' . $fileName;
 
     echo json_encode([
         'success' => true,
