@@ -18,8 +18,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
         
         // Transform the data to match the frontend structure
         $transformedSlides = array_map(function($slide) {
+            // Ensure image path starts with /public/uploads/
+            $imagePath = $slide['image'];
+            if (!empty($imagePath) && !filter_var($imagePath, FILTER_VALIDATE_URL)) {
+                $imagePath = '/public/uploads/' . basename($imagePath);
+            }
+            
             return [
-                'image' => $slide['image'],
+                'image' => $imagePath,
                 'title' => $slide['title'],
                 'subtitle' => $slide['subtitle'],
                 'productLink' => $slide['product_link'],

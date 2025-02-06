@@ -25,14 +25,13 @@ const fetchSlides = async (): Promise<Slide[]> => {
   const data = await response.json();
   console.log('Fetched slides:', data);
   
-  // Validate and transform the data
   if (!Array.isArray(data)) {
     console.error('Invalid data format:', data);
     return [];
   }
 
   return data.map(slide => ({
-    image: slide.image || '',
+    image: slide.image.startsWith('http') ? slide.image : `${SERVER_URL}${slide.image}`,
     title: slide.title || '',
     subtitle: slide.subtitle || '',
     productLink: slide.productLink || '#',
