@@ -72,21 +72,10 @@ const ProductList = ({ onEdit }: ProductListProps) => {
 
   const getImageUrl = (product: Product) => {
     console.log('Processing image for product:', product.name);
-    
-    // Test with a known accessible image first
-    const testImageUrl = "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b";
-    console.log('Using test image URL:', testImageUrl);
-    return testImageUrl;
+    console.log('Product images array:', product.images);
 
-    // Original logic commented out for testing
-    /*
-    if (!product.images) {
-      console.log('No images array found, using placeholder');
-      return "/placeholder.svg";
-    }
-
-    if (product.images.length === 0) {
-      console.log('Empty images array, using placeholder');
+    if (!product.images || product.images.length === 0) {
+      console.log('No images found, using placeholder');
       return "/placeholder.svg";
     }
 
@@ -103,11 +92,11 @@ const ProductList = ({ onEdit }: ProductListProps) => {
       return imageUrl;
     }
 
+    // Ensure we have a clean path without multiple slashes
     const cleanImageUrl = imageUrl.replace(/^\/+/, '');
     const fullUrl = `${SERVER_URL}/public/uploads/${cleanImageUrl}`;
     console.log('Constructed full URL:', fullUrl);
     return fullUrl;
-    */
   };
 
   if (!products) return <div>Loading...</div>;
