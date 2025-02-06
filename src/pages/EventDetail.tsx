@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import { Calendar, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import * as fabric from "./../../node_modules/fabric/dist/fabric.js";
+import * as fabric from "fabric";
 import { useEffect, useRef } from "react";
 
 const EventDetail = () => {
