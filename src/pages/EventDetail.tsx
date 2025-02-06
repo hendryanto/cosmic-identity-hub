@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import { Calendar, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Canvas as FabricCanvas } from "fabric";
+import * as fabric from "fabric";
 import { useEffect, useRef } from "react";
 
 const EventDetail = () => {
@@ -30,7 +30,7 @@ const EventDetail = () => {
   useEffect(() => {
     if (!canvasRef.current || !event?.content) return;
 
-    const canvas = new FabricCanvas(canvasRef.current, {
+    const canvas = new fabric.Canvas(canvasRef.current, {
       width: 800,
       height: 600,
     });
