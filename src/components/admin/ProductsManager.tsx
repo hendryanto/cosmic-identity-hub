@@ -8,29 +8,34 @@ import {
 import { useToast } from "../ui/use-toast";
 import { SERVER_URL } from "../../config/serverConfig";
 import ProductForm from "./products/ProductForm";
-import { ProductFormData } from "../../types/product";
+import { Product, ProductFormData } from "../../types/product";
 import ProductList from "./products/ProductList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 const ProductsManager = () => {
   const { toast } = useToast();
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [activeTab, setActiveTab] = useState("list");
 
   const handleSubmit = async (form: ProductFormData) => {
     console.log("Submitting product:", form);
     
     try {
+      const method = editingProduct ? 'PUT' : 'POST';
+      const body = editingProduct ? { ...form, id: editingProduct.id } : form;
+      
       console.log("Making request to:", `${SERVER_URL}/src/server/products.php`);
       const response = await fetch(`${SERVER_URL}/src/server/products.php`, {
-        method: 'POST',
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify(body),
         credentials: 'include'
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save product');
+        throw new Error(editingProduct ? 'Failed to update product' : 'Failed to save product');
       }
 
       const data = await response.json();
@@ -38,16 +43,25 @@ const ProductsManager = () => {
       
       toast({
         title: "Success",
-        description: "Product saved successfully",
+        description: editingProduct ? "Product updated successfully" : "Product saved successfully",
       });
+
+      // Reset form and go back to list
+      setEditingProduct(null);
+      setActiveTab("list");
     } catch (error) {
       console.error('Error saving product:', error);
       toast({
         title: "Error",
-        description: "Failed to save product. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to save product. Please try again.",
         variant: "destructive",
       });
     }
+  };
+
+  const handleEdit = (product: Product) => {
+    setEditingProduct(product);
+    setActiveTab("add");
   };
 
   return (
@@ -56,18 +70,25 @@ const ProductsManager = () => {
         <CardTitle>Product Management</CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="list">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="list">Product List</TabsTrigger>
-            <TabsTrigger value="add">Add New Product</TabsTrigger>
+            <TabsTrigger value="add">{editingProduct ? 'Edit Product' : 'Add New Product'}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="list">
-            <ProductList />
+            <ProductList onEdit={handleEdit} />
           </TabsContent>
           
           <TabsContent value="add">
-            <ProductForm onSubmit={handleSubmit} />
+            <ProductForm 
+              onSubmit={handleSubmit} 
+              initialForm={editingProduct || undefined}
+              onCancel={() => {
+                setEditingProduct(null);
+                setActiveTab("list");
+              }}
+            />
           </TabsContent>
         </Tabs>
       </CardContent>

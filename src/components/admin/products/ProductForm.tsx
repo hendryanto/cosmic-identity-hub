@@ -10,9 +10,10 @@ import { Documentation } from "./form-sections/Documentation";
 interface ProductFormProps {
   onSubmit: (form: ProductFormData) => void;
   initialForm?: ProductFormData;
+  onCancel?: () => void;
 }
 
-const ProductForm = ({ onSubmit, initialForm }: ProductFormProps) => {
+const ProductForm = ({ onSubmit, initialForm, onCancel }: ProductFormProps) => {
   const [form, setForm] = useState<ProductFormData>(
     initialForm || {
       name: "",
@@ -34,6 +35,13 @@ const ProductForm = ({ onSubmit, initialForm }: ProductFormProps) => {
     }));
   };
 
+  const handleImageDelete = (imageUrl: string) => {
+    setForm(prev => ({
+      ...prev,
+      images: prev.images.filter(img => img !== imageUrl)
+    }));
+  };
+
   const updateForm = (updates: Partial<ProductFormData>) => {
     setForm(prev => ({ ...prev, ...updates }));
   };
@@ -47,7 +55,11 @@ const ProductForm = ({ onSubmit, initialForm }: ProductFormProps) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       <BasicInfo form={form} onUpdate={updateForm} />
       
-      <ImageUpload onUpload={handleImageUpload} existingImages={form.images} />
+      <ImageUpload 
+        onUpload={handleImageUpload} 
+        existingImages={form.images}
+        onDelete={handleImageDelete}
+      />
       
       <Features 
         features={form.features} 
@@ -65,7 +77,16 @@ const ProductForm = ({ onSubmit, initialForm }: ProductFormProps) => {
         onUpdate={updateForm}
       />
 
-      <Button type="submit">Save Product</Button>
+      <div className="flex gap-4">
+        <Button type="submit">
+          {initialForm ? 'Update Product' : 'Save Product'}
+        </Button>
+        {onCancel && (
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+      </div>
     </form>
   );
 };

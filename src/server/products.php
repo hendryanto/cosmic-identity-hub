@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 require_once 'config.php';
@@ -36,6 +36,61 @@ try {
             "message" => "Product deleted successfully"
         ]);
     }
+    else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+        $data = json_decode(file_get_contents("php://input"), true);
+        
+        if (!isset($data['id'])) {
+            throw new Exception('Product ID is required for update');
+        }
+        
+        // Validate required fields
+        if (!isset($data['name']) || !isset($data['category']) || !isset($data['price'])) {
+            throw new Exception('Missing required fields');
+        }
+        
+        // Check if the product exists
+        $checkStmt = $pdo->prepare("SELECT COUNT(*) as count FROM products WHERE id = ?");
+        $checkStmt->execute([$data['id']]);
+        $exists = $checkStmt->fetch(PDO::FETCH_ASSOC)['count'] > 0;
+        
+        if (!$exists) {
+            throw new Exception('Product not found');
+        }
+        
+        // Update the product
+        $stmt = $pdo->prepare("
+            UPDATE products SET
+                name = :name,
+                description = :description,
+                category = :category,
+                price = :price,
+                features = :features,
+                whatsInTheBox = :whatsInTheBox,
+                warranty = :warranty,
+                manual = :manual,
+                image = :image,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = :id
+        ");
+        
+        $stmt->execute([
+            ':id' => $data['id'],
+            ':name' => $data['name'],
+            ':description' => $data['description'] ?? '',
+            ':category' => $data['category'],
+            ':price' => $data['price'],
+            ':features' => json_encode($data['features'] ?? []),
+            ':whatsInTheBox' => json_encode($data['whatsInTheBox'] ?? []),
+            ':warranty' => $data['warranty'] ?? '',
+            ':manual' => $data['manual'] ?? '',
+            ':image' => $data['images'][0] ?? null
+        ]);
+        
+        echo json_encode([
+            "success" => true,
+            "message" => "Product updated successfully"
+        ]);
+    }
     else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get POST data
         $data = json_decode(file_get_contents("php://input"), true);
@@ -60,10 +115,6 @@ try {
             exit();
         }
         
-        // Ensure features and whatsInTheBox are arrays before encoding
-        $features = isset($data['features']) ? (array)$data['features'] : [];
-        $whatsInTheBox = isset($data['whatsInTheBox']) ? (array)$data['whatsInTheBox'] : [];
-        
         // Insert new product
         $stmt = $pdo->prepare("
             INSERT INTO products (
@@ -82,8 +133,8 @@ try {
             ':description' => $data['description'] ?? '',
             ':category' => $data['category'],
             ':price' => $data['price'],
-            ':features' => json_encode($features),
-            ':whatsInTheBox' => json_encode($whatsInTheBox),
+            ':features' => json_encode($data['features'] ?? []),
+            ':whatsInTheBox' => json_encode($data['whatsInTheBox'] ?? []),
             ':warranty' => $data['warranty'] ?? '',
             ':manual' => $data['manual'] ?? '',
             ':image' => $data['images'][0] ?? null

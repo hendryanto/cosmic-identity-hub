@@ -13,7 +13,11 @@ import { Button } from "../../ui/button";
 import { Trash2, Pencil } from "lucide-react";
 import { useToast } from "../../ui/use-toast";
 
-const ProductList = () => {
+interface ProductListProps {
+  onEdit?: (product: Product) => void;
+}
+
+const ProductList = ({ onEdit }: ProductListProps) => {
   const { toast } = useToast();
 
   const { data: products, refetch } = useQuery({
@@ -80,7 +84,7 @@ const ProductList = () => {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => {/* TODO: Implement edit */}}
+                    onClick={() => onEdit?.(product)}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
