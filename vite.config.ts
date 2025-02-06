@@ -25,6 +25,5 @@ export default defineConfig(({ mode }) => ({
   },
   optimizeDeps: {
     include: ['fabric'],
-    exclude: ['fabric'],
   },
 }));
