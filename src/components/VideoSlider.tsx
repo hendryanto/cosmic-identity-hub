@@ -30,22 +30,36 @@ const fetchSlides = async (): Promise<Slide[]> => {
     return [];
   }
 
-  return data.map(slide => ({
-    image: slide.image.startsWith('http') ? slide.image : `${SERVER_URL}${slide.image}`,
-    title: slide.title || '',
-    subtitle: slide.subtitle || '',
-    productLink: slide.productLink || '#',
-    cta: {
-      primary: {
-        text: slide.cta?.primary?.text || 'Learn More',
-        link: slide.cta?.primary?.link || '#'
-      },
-      secondary: {
-        text: slide.cta?.secondary?.text || 'View Details',
-        link: slide.cta?.secondary?.link || '#'
-      }
+  return data.map(slide => {
+    // Handle image URL construction
+    let imageUrl = slide.image;
+    if (!imageUrl.startsWith('http')) {
+      // Remove any duplicate SERVER_URL if present
+      imageUrl = imageUrl.replace(SERVER_URL, '');
+      // Ensure we have a clean path starting with /
+      imageUrl = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+      // Construct the full URL
+      imageUrl = `${SERVER_URL}${imageUrl}`;
     }
-  }));
+    console.log('Processed image URL:', imageUrl);
+
+    return {
+      image: imageUrl,
+      title: slide.title || '',
+      subtitle: slide.subtitle || '',
+      productLink: slide.productLink || '#',
+      cta: {
+        primary: {
+          text: slide.cta?.primary?.text || 'Learn More',
+          link: slide.cta?.primary?.link || '#'
+        },
+        secondary: {
+          text: slide.cta?.secondary?.text || 'View Details',
+          link: slide.cta?.secondary?.link || '#'
+        }
+      }
+    };
+  });
 };
 
 const VideoSlider = () => {
@@ -94,7 +108,7 @@ const VideoSlider = () => {
           onClick={() => handleSlideClick(slide.productLink)}
         >
           <img
-            src={`${SERVER_URL}${slide.image}`}
+            src={slide.image}
             alt={slide.title}
             className="w-full h-full object-cover"
           />
