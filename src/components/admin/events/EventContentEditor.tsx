@@ -177,12 +177,10 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
       console.log("Image loaded into FileReader");
       
       fabric.Image.fromURL(event.target.result.toString(), {
-        crossOrigin: 'anonymous',
-        scaleX: 0.5,
-        scaleY: 0.5,
-        objectCaching: false,
+        crossOrigin: 'anonymous'
       }).then((img) => {
         console.log("Image created from URL");
+        img.scale(0.5);
         canvas.add(img);
         canvas.setActiveObject(img);
         const json = canvas.toJSON();
