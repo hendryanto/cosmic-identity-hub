@@ -17,7 +17,7 @@ try {
     $file = $_FILES['image'];
     $fileName = uniqid() . '-' . basename($file['name']);
     
-    // Define the upload directory path relative to the server root
+    // Define the upload directory path relative to the public folder
     $uploadDir = '../../public/uploads/';
     
     // Create directory if it doesn't exist
@@ -25,8 +25,8 @@ try {
         if (!mkdir($uploadDir, 0777, true)) {
             throw new Exception('Failed to create upload directory');
         }
-        chmod($uploadDir, 0777);
     }
+    chmod($uploadDir, 0777);
     
     $uploadPath = $uploadDir . $fileName;
 
@@ -45,7 +45,7 @@ try {
         throw new Exception('Failed to move uploaded file. Error: ' . error_get_last()['message']);
     }
 
-    // Return the URL path that will work with the frontend
+    // Return only the relative path that will be appended to SERVER_URL
     $imageUrl = '/uploads/' . $fileName;
 
     echo json_encode([

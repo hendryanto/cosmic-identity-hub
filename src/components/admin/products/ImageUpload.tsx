@@ -58,8 +58,7 @@ export const ImageUpload = ({ onUpload, existingImages }: ImageUploadProps) => {
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || `Upload failed for ${selectedFiles[i].name}`);
+          throw new Error(`Upload failed with status ${response.status}`);
         }
 
         const data = await response.json();
