@@ -101,20 +101,26 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!canvas || !e.target.files?.[0]) return;
     
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       if (!event.target?.result) return;
       
-      FabricImage.fromURL(event.target.result.toString(), (img) => {
-        img.scale(0.5);  // Scale the image to 50% of its original size
+      try {
+        const img = await FabricImage.fromURL(event.target.result.toString(), {
+          crossOrigin: 'anonymous'
+        });
+        
+        img.scale(0.5);
         canvas.add(img);
         canvas.setActiveObject(img);
         const json = canvas.toJSON();
         onChange(JSON.stringify(json));
-      });
+      } catch (error) {
+        console.error('Error loading image:', error);
+      }
     };
     reader.readAsDataURL(e.target.files[0]);
   };
