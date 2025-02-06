@@ -26,5 +26,8 @@ export default defineConfig(({ mode }) => ({
     commonjsOptions: {
       include: [/fabric/, /node_modules/],
     },
+    rollupOptions: {
+      external: ['fabric'],
+    },
   },
 }));
