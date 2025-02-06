@@ -10,6 +10,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useToast } from "../ui/use-toast";
 import { SERVER_URL } from "../../config/serverConfig";
+import { ImageUpload } from "./products/ImageUpload";
 
 interface Slide {
   image: string;
@@ -53,6 +54,13 @@ const SlideManager = () => {
     } else {
       newSlides[index][field as keyof Omit<Slide, "cta">] = value;
     }
+    setSlides(newSlides);
+  };
+
+  const handleImageUpload = (index: number, imageUrl: string) => {
+    console.log('Image uploaded:', imageUrl);
+    const newSlides = [...slides];
+    newSlides[index].image = imageUrl;
     setSlides(newSlides);
   };
 
@@ -113,11 +121,11 @@ const SlideManager = () => {
 
               <div className="space-y-4">
                 <div>
-                  <Label>Image URL</Label>
-                  <Input
-                    value={slide.image}
-                    onChange={(e) => handleSlideChange(index, "image", e.target.value)}
-                    placeholder="Image URL"
+                  <Label>Slide Image</Label>
+                  <ImageUpload
+                    onUpload={(imageUrl) => handleImageUpload(index, imageUrl)}
+                    existingImages={slide.image ? [slide.image] : []}
+                    onDelete={() => handleSlideChange(index, "image", "")}
                   />
                 </div>
 

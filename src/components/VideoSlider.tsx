@@ -2,24 +2,39 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { SERVER_URL } from '../config/serverConfig';
 
-const slides = [
-  {
-    image: "/lovable-uploads/67211670-08f8-4491-8217-e15cdf3d054b.png",
-    title: "Happy Chinese New Year 2025",
-    subtitle: "Samsung TV & Audio wish you prosperity and good fortune",
-    productLink: "/products/1",
-    cta: {
-      primary: { text: "Buy now", link: "#" },
-      secondary: { text: "Learn more", link: "#" }
-    }
-  },
-  // Add more slides as needed
-];
+interface Slide {
+  image: string;
+  title: string;
+  subtitle: string;
+  productLink: string;
+  cta: {
+    primary: { text: string; link: string };
+    secondary: { text: string; link: string };
+  };
+}
+
+const fetchSlides = async (): Promise<Slide[]> => {
+  console.log('Fetching slides from server...');
+  const response = await fetch(`${SERVER_URL}/src/server/slides.php`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch slides');
+  }
+  const data = await response.json();
+  console.log('Fetched slides:', data);
+  return data;
+};
 
 const VideoSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
+
+  const { data: slides = [] } = useQuery({
+    queryKey: ['slides'],
+    queryFn: fetchSlides,
+  });
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -32,11 +47,15 @@ const VideoSlider = () => {
   useEffect(() => {
     const timer = setInterval(nextSlide, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   const handleSlideClick = (productLink: string) => {
     navigate(productLink);
   };
+
+  if (slides.length === 0) {
+    return null;
+  }
 
   return (
     <div className="relative w-full h-[calc(100vh-5rem)] overflow-hidden">
@@ -49,7 +68,7 @@ const VideoSlider = () => {
           onClick={() => handleSlideClick(slide.productLink)}
         >
           <img
-            src={slide.image}
+            src={`${SERVER_URL}${slide.image}`}
             alt={slide.title}
             className="w-full h-full object-cover"
           />
