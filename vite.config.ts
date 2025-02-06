@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "fabric": "fabric/dist/fabric.js"
+      "fabric": path.resolve(__dirname, "node_modules/fabric/dist/fabric.js")
     },
   },
   build: {
