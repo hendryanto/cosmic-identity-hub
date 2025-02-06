@@ -108,13 +108,18 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
     reader.onload = (event) => {
       if (!event.target?.result) return;
       
-      fabric.Image.fromURL(event.target.result.toString(), (img) => {
-        img.scale(0.5);  // Scale the image to 50% of its original size
-        canvas.add(img);
-        canvas.setActiveObject(img);
-        const json = canvas.toJSON();
-        onChange(JSON.stringify(json));
-      }, { crossOrigin: 'anonymous' });
+      fabric.Image.fromURL(event.target.result.toString(), {
+        crossOrigin: 'anonymous',
+        scaleX: 0.5,
+        scaleY: 0.5,
+        objectCaching: false,
+        callback: (img: fabric.Image) => {
+          canvas.add(img);
+          canvas.setActiveObject(img);
+          const json = canvas.toJSON();
+          onChange(JSON.stringify(json));
+        }
+      });
     };
     reader.readAsDataURL(e.target.files[0]);
   };
