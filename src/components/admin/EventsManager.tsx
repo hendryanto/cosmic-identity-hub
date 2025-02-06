@@ -1,199 +1,77 @@
-import { useState } from "react";
-import { Button } from "../ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
+import { useState, useEffect } from "react";
 import { useToast } from "../ui/use-toast";
 import { SERVER_URL } from "../../config/serverConfig";
-
-interface EventForm {
-  id?: number;  // Added id as optional since new events won't have an id
-  title: string;
-  description: string;
-  date: string;
-  image: string;
-  content: string;
-}
-
-const initialForm: EventForm = {
-  title: "",
-  description: "",
-  date: "",
-  image: "",
-  content: "",
-};
+import { Event } from "../../types/event";
+import EventForm from "./events/EventForm";
+import EventList from "./events/EventList";
+import { Button } from "../ui/button";
 
 const EventsManager = () => {
-  const [form, setForm] = useState<EventForm>(initialForm);
-  const [events, setEvents] = useState<EventForm[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Submitting event:", form);
-
+  const fetchEvents = async () => {
     try {
       const response = await fetch(`${SERVER_URL}/src/server/events.php`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
         credentials: 'include'
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to save event');
-      }
-
+      if (!response.ok) throw new Error('Failed to fetch events');
       const data = await response.json();
-      console.log('Event saved:', data);
-      
-      // Update the events array with the new event including its id from the response
-      const newEvent = { ...form, id: data.id };
-      setEvents(prev => [...prev, newEvent]);
-      setForm(initialForm);
-      
-      toast({
-        title: "Success",
-        description: "Event saved successfully",
-      });
+      setEvents(data);
     } catch (error) {
-      console.error('Error saving event:', error);
+      console.error('Error fetching events:', error);
       toast({
         title: "Error",
-        description: "Failed to save event. Please try again.",
+        description: "Failed to load events",
         variant: "destructive",
       });
     }
   };
 
-  const handleDelete = async (index: number) => {
-    try {
-      const eventToDelete = events[index];
-      // Only proceed with deletion if we have an id
-      if (!eventToDelete.id) {
-        throw new Error('Event ID not found');
-      }
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
-      const response = await fetch(`${SERVER_URL}/src/server/events.php?id=${eventToDelete.id}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
+  const handleSave = () => {
+    fetchEvents();
+    setEditingEvent(null);
+    setIsAdding(false);
+  };
 
-      if (!response.ok) {
-        throw new Error('Failed to delete event');
-      }
-
-      setEvents(prev => prev.filter((_, i) => i !== index));
-      toast({
-        title: "Success",
-        description: "Event deleted successfully",
-      });
-    } catch (error) {
-      console.error('Error deleting event:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete event. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const handleDelete = (id: number) => {
+    setEvents(prev => prev.filter(event => event.id !== id));
   };
 
   return (
     <div className="space-y-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Add New Event</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="title">Event Title</Label>
-              <Input
-                id="title"
-                value={form.title}
-                onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
-              />
-            </div>
+      {!isAdding && !editingEvent && (
+        <Button onClick={() => setIsAdding(true)}>Add New Event</Button>
+      )}
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Short Description</Label>
-              <Textarea
-                id="description"
-                value={form.description}
-                onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))}
-              />
-            </div>
+      {isAdding && (
+        <EventForm
+          onSave={handleSave}
+          onCancel={() => setIsAdding(false)}
+        />
+      )}
 
-            <div className="space-y-2">
-              <Label htmlFor="date">Event Date</Label>
-              <Input
-                id="date"
-                type="date"
-                value={form.date}
-                onChange={(e) => setForm(prev => ({ ...prev, date: e.target.value }))}
-              />
-            </div>
+      {editingEvent && (
+        <EventForm
+          event={editingEvent}
+          onSave={handleSave}
+          onCancel={() => setEditingEvent(null)}
+        />
+      )}
 
-            <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                value={form.image}
-                onChange={(e) => setForm(prev => ({ ...prev, image: e.target.value }))}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="content">Event Content (HTML)</Label>
-              <Textarea
-                id="content"
-                value={form.content}
-                onChange={(e) => setForm(prev => ({ ...prev, content: e.target.value }))}
-                className="min-h-[200px]"
-              />
-            </div>
-
-            <Button type="submit">Save Event</Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Current Events</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {events.map((event, index) => (
-              <Card key={index}>
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold">{event.title}</h3>
-                      <p className="text-sm text-gray-600">{event.description}</p>
-                      <p className="text-sm text-gray-500">{event.date}</p>
-                    </div>
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDelete(index)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {!isAdding && !editingEvent && (
+        <EventList
+          events={events}
+          onEdit={setEditingEvent}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 };
