@@ -173,11 +173,10 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
 
   const updateBackgroundColor = (color: string) => {
     if (!canvas) return;
-    canvas.setBackgroundColor(color, () => {
-      canvas.renderAll();
-      const json = canvas.toJSON();
-      onChange(JSON.stringify(json));
-    });
+    canvas.set('backgroundColor', color);
+    canvas.renderAll();
+    const json = canvas.toJSON();
+    onChange(JSON.stringify(json));
     setBackgroundColor(color);
   };
 
