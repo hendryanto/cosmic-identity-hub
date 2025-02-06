@@ -18,23 +18,48 @@ try {
         if (!isset($data['id'])) {
             throw new Exception('Product ID is required');
         }
+
+        // Start transaction
+        $pdo->beginTransaction();
         
-        // Delete product images first
-        $stmt = $pdo->prepare("DELETE FROM product_images WHERE product_id = ?");
-        $stmt->execute([$data['id']]);
-        
-        // Then delete the product
-        $stmt = $pdo->prepare("DELETE FROM products WHERE id = ?");
-        $stmt->execute([$data['id']]);
-        
-        if ($stmt->rowCount() === 0) {
-            throw new Exception('Product not found');
+        try {
+            // Get image paths before deleting the product
+            $stmt = $pdo->prepare("SELECT image_url FROM product_images WHERE product_id = ?");
+            $stmt->execute([$data['id']]);
+            $images = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            // Delete physical image files
+            foreach ($images as $imageUrl) {
+                $filePath = "../../public" . parse_url($imageUrl, PHP_URL_PATH);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+            
+            // Delete product images from database
+            $stmt = $pdo->prepare("DELETE FROM product_images WHERE product_id = ?");
+            $stmt->execute([$data['id']]);
+            
+            // Delete the product
+            $stmt = $pdo->prepare("DELETE FROM products WHERE id = ?");
+            $stmt->execute([$data['id']]);
+            
+            if ($stmt->rowCount() === 0) {
+                throw new Exception('Product not found');
+            }
+            
+            // Commit transaction
+            $pdo->commit();
+            
+            echo json_encode([
+                "success" => true,
+                "message" => "Product and associated images deleted successfully"
+            ]);
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $pdo->rollBack();
+            throw $e;
         }
-        
-        echo json_encode([
-            "success" => true,
-            "message" => "Product deleted successfully"
-        ]);
     }
     else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $data = json_decode(file_get_contents("php://input"), true);
