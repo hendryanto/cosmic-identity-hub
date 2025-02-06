@@ -4,10 +4,13 @@ import Navbar from "../components/Navbar";
 import { Calendar, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Canvas as FabricCanvas } from "fabric";
+import { useEffect, useRef } from "react";
 
 const EventDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const { data: event, isLoading } = useQuery({
     queryKey: ["event", id],
@@ -19,20 +22,38 @@ const EventDetail = () => {
         description: "Join us for the launch of our latest rice cooker series with advanced features.",
         date: "2024-03-15",
         image: "/lovable-uploads/42c7ecd0-4323-444c-a0d5-374d9404a16e.png",
-        content: `
-          <p>We are excited to announce the launch of our newest rice cooker series! Join us for an exclusive event where we'll showcase the advanced features and innovative technology behind our latest products.</p>
-          <h3>Event Highlights:</h3>
-          <ul>
-            <li>Product demonstration</li>
-            <li>Cooking showcase</li>
-            <li>Special launch day discounts</li>
-            <li>Free gifts for attendees</li>
-          </ul>
-          <p>Don't miss this opportunity to be among the first to experience our new rice cooker series!</p>
-        `
+        content: `{"version":"5.3.0","objects":[{"type":"text","version":"5.3.0","originX":"left","originY":"top","left":100,"top":100,"width":300,"height":45.2,"fill":"#000000","stroke":null,"strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeUniform":false,"strokeMiterLimit":4,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"backgroundColor":"","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","skewX":0,"skewY":0,"text":"Event Content Example","fontSize":40,"fontWeight":"normal","fontFamily":"Times New Roman","fontStyle":"normal","lineHeight":1.16,"underline":false,"overline":false,"linethrough":false,"textAlign":"left","textBackgroundColor":"","charSpacing":0,"path":null,"direction":"ltr","minWidth":20,"splitByGrapheme":false,"styles":{}}],"background":"#ffffff"}`
       };
     },
   });
+
+  useEffect(() => {
+    if (!canvasRef.current || !event?.content) return;
+
+    const canvas = new FabricCanvas(canvasRef.current, {
+      width: 800,
+      height: 600,
+    });
+
+    try {
+      canvas.loadFromJSON(event.content, () => {
+        canvas.renderAll();
+      });
+    } catch (error) {
+      console.error("Error loading canvas content:", error);
+    }
+
+    // Make canvas static (non-interactive)
+    canvas.selection = false;
+    canvas.forEachObject((obj) => {
+      obj.selectable = false;
+      obj.hoverCursor = "default";
+    });
+
+    return () => {
+      canvas.dispose();
+    };
+  }, [event?.content]);
 
   if (isLoading) return (
     <div className="min-h-screen bg-white">
@@ -73,10 +94,11 @@ const EventDetail = () => {
               </span>
             </div>
             <h1 className="text-3xl font-bold mb-4">{event?.title}</h1>
-            <div
-              className="prose max-w-none"
-              dangerouslySetInnerHTML={{ __html: event?.content || "" }}
-            />
+            <p className="text-gray-600 mb-8">{event?.description}</p>
+            
+            <div className="border border-gray-200 rounded-lg overflow-hidden mb-8">
+              <canvas ref={canvasRef} />
+            </div>
           </div>
         </div>
       </div>

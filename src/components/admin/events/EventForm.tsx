@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Event } from "../../../types/event";
 import { useToast } from "../../ui/use-toast";
 import { SERVER_URL } from "../../../config/serverConfig";
+import { EventContentEditor } from "./EventContentEditor";
 
 interface EventFormProps {
   event?: Event;
@@ -115,12 +116,10 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="content">Event Content (HTML)</Label>
-            <Textarea
-              id="content"
-              value={form.content}
-              onChange={(e) => setForm(prev => ({ ...prev, content: e.target.value }))}
-              className="min-h-[200px]"
+            <Label>Event Content</Label>
+            <EventContentEditor
+              initialContent={form.content}
+              onChange={(content) => setForm(prev => ({ ...prev, content: content }))}
             />
           </div>
 
