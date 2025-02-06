@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { Calendar, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Canvas, IText } from 'fabric';
+import { fabric } from 'fabric';
 import { useEffect, useRef } from "react";
 
 const EventDetail = () => {
@@ -12,7 +12,7 @@ const EventDetail = () => {
 
   useEffect(() => {
     if (canvasRef.current) {
-      const canvas = new Canvas(canvasRef.current);
+      const canvas = new fabric.Canvas(canvasRef.current);
       canvas.setDimensions({ width: 800, height: 600 });
 
       // Example event details
@@ -24,21 +24,21 @@ const EventDetail = () => {
       };
 
       // Add text objects to canvas
-      const title = new IText(eventDetails.title, {
+      const title = new fabric.IText(eventDetails.title, {
         left: 50,
         top: 50,
         fontSize: 40,
         fontFamily: 'Arial',
       });
 
-      const dateText = new IText(format(eventDetails.date, 'MMMM dd, yyyy'), {
+      const dateText = new fabric.IText(format(eventDetails.date, 'MMMM dd, yyyy'), {
         left: 50,
         top: 100,
         fontSize: 24,
         fontFamily: 'Arial',
       });
 
-      const locationText = new IText(eventDetails.location, {
+      const locationText = new fabric.IText(eventDetails.location, {
         left: 50,
         top: 140,
         fontSize: 20,
