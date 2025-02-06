@@ -72,8 +72,10 @@ const ProductList = ({ onEdit }: ProductListProps) => {
 
   // Function to get image URL or fallback
   const getImageUrl = (product: Product) => {
-    if (product.images && product.images[0]) {
-      return product.images[0];
+    if (product.images && product.images.length > 0) {
+      // Ensure the image URL starts with the correct path
+      const imageUrl = product.images[0];
+      return imageUrl.startsWith('http') ? imageUrl : `${SERVER_URL}/${imageUrl}`;
     }
     return "https://via.placeholder.com/50";
   };
@@ -83,10 +85,10 @@ const ProductList = ({ onEdit }: ProductListProps) => {
   return (
     <div className="rounded-md border">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-[#1A1F2C]">
           <TableRow>
-            <TableHead>Image</TableHead>
-            <TableHead>
+            <TableHead className="text-white">Image</TableHead>
+            <TableHead className="text-white">
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <span>Name</span>
@@ -96,11 +98,11 @@ const ProductList = ({ onEdit }: ProductListProps) => {
                   placeholder="Filter by name..."
                   value={nameFilter}
                   onChange={(e) => setNameFilter(e.target.value)}
-                  className="h-8 w-full"
+                  className="h-8 w-full bg-white/10 text-white placeholder:text-gray-400"
                 />
               </div>
             </TableHead>
-            <TableHead>
+            <TableHead className="text-white">
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <span>Category</span>
@@ -110,12 +112,12 @@ const ProductList = ({ onEdit }: ProductListProps) => {
                   placeholder="Filter by category..."
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="h-8 w-full"
+                  className="h-8 w-full bg-white/10 text-white placeholder:text-gray-400"
                 />
               </div>
             </TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="text-white">Price</TableHead>
+            <TableHead className="text-right text-white">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -127,6 +129,7 @@ const ProductList = ({ onEdit }: ProductListProps) => {
                   alt={product.name}
                   className="w-12 h-12 object-cover rounded"
                   onError={(e) => {
+                    console.log('Image failed to load:', getImageUrl(product));
                     const target = e.target as HTMLImageElement;
                     target.src = "https://via.placeholder.com/50";
                   }}
