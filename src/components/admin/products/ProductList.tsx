@@ -73,11 +73,15 @@ const ProductList = ({ onEdit }: ProductListProps) => {
   // Function to get image URL or fallback
   const getImageUrl = (product: Product) => {
     if (product.images && product.images.length > 0) {
-      // Ensure the image URL starts with the correct path
       const imageUrl = product.images[0];
-      return imageUrl.startsWith('http') ? imageUrl : `${SERVER_URL}/${imageUrl}`;
+      // If the image URL is relative, prepend the SERVER_URL
+      if (!imageUrl.startsWith('http')) {
+        return `${SERVER_URL}${imageUrl}`;
+      }
+      return imageUrl;
     }
-    return "https://via.placeholder.com/50";
+    // Use a local placeholder image to avoid infinite loading loop
+    return "/placeholder.svg";
   };
 
   if (!products) return <div>Loading...</div>;
@@ -131,7 +135,7 @@ const ProductList = ({ onEdit }: ProductListProps) => {
                   onError={(e) => {
                     console.log('Image failed to load:', getImageUrl(product));
                     const target = e.target as HTMLImageElement;
-                    target.src = "https://via.placeholder.com/50";
+                    target.src = "/placeholder.svg";
                   }}
                 />
               </TableCell>
