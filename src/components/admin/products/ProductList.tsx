@@ -70,27 +70,37 @@ const ProductList = ({ onEdit }: ProductListProps) => {
     return nameMatch && categoryMatch;
   });
 
-  // Function to get image URL or fallback
   const getImageUrl = (product: Product) => {
     console.log('Processing image for product:', product.name);
-    if (product.images && product.images.length > 0) {
-      const imageUrl = product.images[0];
-      console.log('Raw image URL:', imageUrl);
-      
-      // Handle absolute URLs (starting with http/https)
-      if (imageUrl.startsWith('http')) {
-        console.log('Using absolute URL:', imageUrl);
-        return imageUrl;
-      }
-      
-      // Handle relative URLs by ensuring proper path construction
-      const cleanImageUrl = imageUrl.replace(/^\/+/, ''); // Remove all leading slashes
-      const fullUrl = `${SERVER_URL}/public/uploads/${cleanImageUrl}`;
-      console.log('Constructed full URL:', fullUrl);
-      return fullUrl;
+    if (!product.images) {
+      console.log('No images array found, using placeholder');
+      return "/placeholder.svg";
     }
-    console.log('Using placeholder image');
-    return "/placeholder.svg";
+
+    if (product.images.length === 0) {
+      console.log('Empty images array, using placeholder');
+      return "/placeholder.svg";
+    }
+
+    const imageUrl = product.images[0];
+    console.log('Raw image URL:', imageUrl);
+
+    if (!imageUrl) {
+      console.log('No image URL found, using placeholder');
+      return "/placeholder.svg";
+    }
+
+    // Handle absolute URLs
+    if (imageUrl.startsWith('http')) {
+      console.log('Using absolute URL:', imageUrl);
+      return imageUrl;
+    }
+
+    // Handle relative URLs
+    const cleanImageUrl = imageUrl.replace(/^\/+/, '');
+    const fullUrl = `${SERVER_URL}/public/uploads/${cleanImageUrl}`;
+    console.log('Constructed full URL:', fullUrl);
+    return fullUrl;
   };
 
   if (!products) return <div>Loading...</div>;
@@ -156,7 +166,12 @@ const ProductList = ({ onEdit }: ProductListProps) => {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => onEdit?.(product)}
+                    onClick={() => {
+                      console.log('Edit button clicked for product:', product);
+                      if (onEdit) {
+                        onEdit(product);
+                      }
+                    }}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>

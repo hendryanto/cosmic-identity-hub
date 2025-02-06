@@ -63,6 +63,10 @@ const ProductsManager = () => {
 
   const handleEdit = (product: Product) => {
     console.log("Editing product:", product);
+    if (!product) {
+      console.error("No product provided to edit");
+      return;
+    }
     setEditingProduct(product);
     setActiveTab("add");
   };
