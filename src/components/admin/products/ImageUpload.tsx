@@ -45,7 +45,7 @@ export const ImageUpload = ({ onUpload, existingImages, onDelete }: ImageUploadP
         console.log('Upload response:', data);
         
         if (data.success && data.imageUrl) {
-          const imageUrl = `${SERVER_URL}${data.imageUrl}`.replace(/([^:])\/+/g, '$1/');
+          const imageUrl = `${SERVER_URL}/public/uploads/${data.imageUrl.split('/').pop()}`;
           console.log('Constructed image URL:', imageUrl);
           onUpload(imageUrl);
           uploadedCount++;
