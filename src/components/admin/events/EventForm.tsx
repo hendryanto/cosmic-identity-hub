@@ -28,8 +28,8 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
   const { toast } = useToast();
 
   const handleImageUpload = (imageUrl: string) => {
-    // Remove 'lovable-uploads/' from the path if it exists
-    const cleanImageUrl = imageUrl.replace('lovable-uploads/', '');
+    // Remove any path prefixes and keep only the filename
+    const cleanImageUrl = imageUrl.split('/').pop() || '';
     setForm(prev => ({
       ...prev,
       images: [...(prev.images || []), cleanImageUrl]
@@ -66,7 +66,7 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
       console.log("Server response:", data);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to save event');
+        throw new Error(data.message || 'Failed to save event');
       }
 
       toast({
