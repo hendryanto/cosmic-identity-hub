@@ -28,9 +28,11 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
   const { toast } = useToast();
 
   const handleImageUpload = (imageUrl: string) => {
+    // Remove 'lovable-uploads/' from the path if it exists
+    const cleanImageUrl = imageUrl.replace('lovable-uploads/', '');
     setForm(prev => ({
       ...prev,
-      images: [...(prev.images || []), imageUrl]
+      images: [...(prev.images || []), cleanImageUrl]
     }));
   };
 
@@ -55,7 +57,7 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
         },
         body: JSON.stringify({
           ...form,
-          id: event?.id // Include ID for PUT requests
+          id: event?.id
         }),
         credentials: 'include'
       });

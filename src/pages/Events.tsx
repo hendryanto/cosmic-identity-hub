@@ -26,6 +26,12 @@ const Events = () => {
     },
   });
 
+  const getImageUrl = (imagePath: string) => {
+    if (!imagePath) return '/placeholder.svg';
+    if (imagePath.startsWith('http')) return imagePath;
+    return `/lovable-uploads/${imagePath}`;
+  };
+
   if (error) {
     console.error("Error loading events:", error);
   }
@@ -58,7 +64,7 @@ const Events = () => {
                 <Card className="hover:shadow-lg transition-shadow border border-gray-200">
                   <CardHeader className="p-0">
                     <img
-                      src={event.images?.[0] || '/placeholder.svg'}
+                      src={getImageUrl(event.images?.[0] || '')}
                       alt={event.title}
                       className="w-full h-64 object-cover"
                     />
