@@ -8,38 +8,27 @@ import {
   CardContent,
   CardHeader,
 } from "@/components/ui/card";
-
-interface Event {
-  id: number;
-  title: string;
-  description: string;
-  date: string;
-  image: string;
-}
+import { SERVER_URL } from "../config/serverConfig";
+import { Event } from "../types/event";
 
 const Events = () => {
-  const { data: events = [], isLoading } = useQuery({
+  const { data: events = [], isLoading, error } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
-      // This would be replaced with actual API call
-      return [
-        {
-          id: 1,
-          title: "Product Launch: New Rice Cooker Series",
-          description: "Join us for the launch of our latest rice cooker series with advanced features.",
-          date: "2024-03-15",
-          image: "/lovable-uploads/42c7ecd0-4323-444c-a0d5-374d9404a16e.png"
-        },
-        {
-          id: 2,
-          title: "Cooking Workshop with Chef",
-          description: "Learn to cook delicious meals using Cosmos appliances.",
-          date: "2024-03-20",
-          image: "/lovable-uploads/43efd89a-bcf3-41f9-b9d1-5a305bfd1e07.png"
-        },
-      ] as Event[];
+      console.log("Fetching events from server...");
+      const response = await fetch(`${SERVER_URL}/src/server/events.php`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch events');
+      }
+      const data = await response.json();
+      console.log("Fetched events:", data);
+      return data as Event[];
     },
   });
+
+  if (error) {
+    console.error("Error loading events:", error);
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -50,16 +39,26 @@ const Events = () => {
           <h1 className="text-3xl font-bold">Events</h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {isLoading ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center min-h-[200px]">
             <p>Loading events...</p>
-          ) : (
-            events.map((event) => (
+          </div>
+        ) : error ? (
+          <div className="text-red-500 text-center">
+            Failed to load events. Please try again later.
+          </div>
+        ) : events.length === 0 ? (
+          <div className="text-center text-gray-500">
+            No events available at the moment.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {events.map((event) => (
               <Link key={event.id} to={`/events/${event.id}`}>
                 <Card className="hover:shadow-lg transition-shadow border border-gray-200">
                   <CardHeader className="p-0">
                     <img
-                      src={event.image}
+                      src={event.images?.[0] || '/placeholder.svg'}
                       alt={event.title}
                       className="w-full h-64 object-cover"
                     />
@@ -77,9 +76,9 @@ const Events = () => {
                   </CardContent>
                 </Card>
               </Link>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
