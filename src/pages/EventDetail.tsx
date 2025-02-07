@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { Calendar, ArrowLeft } from "lucide-react";
+import { Calendar, ArrowLeft, MapPin, Clock, Users, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
@@ -20,7 +20,9 @@ const EventDetail = () => {
     queryKey: ['event', id],
     queryFn: async () => {
       console.log('Fetching event details for id:', id);
-      const response = await fetch(`${SERVER_URL}/src/server/events.php?id=${id}`);
+      const response = await fetch(`${SERVER_URL}/src/server/events.php?id=${id}`, {
+        credentials: 'include'
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch event details');
       }
@@ -32,6 +34,7 @@ const EventDetail = () => {
 
   useEffect(() => {
     if (canvasRef.current && event) {
+      console.log('Initializing canvas with event:', event);
       const canvas = new fabric.Canvas(canvasRef.current);
       canvas.setDimensions({ width: 800, height: 600 });
 
@@ -50,7 +53,7 @@ const EventDetail = () => {
         fontFamily: 'Arial',
       });
 
-      const locationText = new fabric.IText('Convention Center', {
+      const locationText = new fabric.IText(event.description || 'Convention Center', {
         left: 50,
         top: 140,
         fontSize: 20,
@@ -60,6 +63,22 @@ const EventDetail = () => {
       canvas.add(title);
       canvas.add(dateText);
       canvas.add(locationText);
+
+      // Add event images if available
+      if (event.images && event.images.length > 0) {
+        console.log('Loading event images:', event.images);
+        event.images.forEach((imageUrl, index) => {
+          fabric.Image.fromURL(imageUrl, (img: any) => {
+            img.scale(0.5);
+            img.set({
+              left: 400,
+              top: 100 + (index * 150)
+            });
+            canvas.add(img);
+            canvas.renderAll();
+          });
+        });
+      }
     }
   }, [event]);
 
@@ -115,17 +134,48 @@ const EventDetail = () => {
 
                 <div className="prose max-w-none">
                   <p>{event.description}</p>
+                  {event.content && (
+                    <div dangerouslySetInnerHTML={{ __html: event.content }} />
+                  )}
                 </div>
 
                 <div className="space-y-4">
                   <h2 className="text-xl font-semibold">Event Details</h2>
                   <ul className="space-y-2">
-                    <li>Location: Convention Center</li>
-                    <li>Time: 9:00 AM - 5:00 PM</li>
-                    <li>Capacity: 500 attendees</li>
-                    <li>Type: In-person</li>
+                    <li className="flex items-center">
+                      <MapPin className="mr-2 h-4 w-4" />
+                      Location: Convention Center
+                    </li>
+                    <li className="flex items-center">
+                      <Clock className="mr-2 h-4 w-4" />
+                      Time: 9:00 AM - 5:00 PM
+                    </li>
+                    <li className="flex items-center">
+                      <Users className="mr-2 h-4 w-4" />
+                      Capacity: 500 attendees
+                    </li>
+                    <li className="flex items-center">
+                      <Monitor className="mr-2 h-4 w-4" />
+                      Type: In-person
+                    </li>
                   </ul>
                 </div>
+
+                {event.images && event.images.length > 0 && (
+                  <div className="space-y-4">
+                    <h2 className="text-xl font-semibold">Event Images</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                      {event.images.map((image, index) => (
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`Event image ${index + 1}`}
+                          className="rounded-lg shadow-md"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <Button className="w-full md:w-auto">
                   Register Now
