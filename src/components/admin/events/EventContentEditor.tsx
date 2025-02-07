@@ -5,18 +5,17 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Card, CardContent } from "../../ui/card";
 import { 
-  Image, 
-  Type, 
-  Square, 
-  Circle as CircleIcon,
+  Image,
+  Bold,
+  Italic,
+  Underline,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  List,
+  ListOrdered,
+  Type,
   Trash2,
-  Move,
-  PaintBucket,
-  TextCursor,
-  Palette,
-  SunDim,
-  ArrowUpDown,
-  ArrowLeftRight
 } from "lucide-react";
 import {
   Select,
@@ -34,32 +33,21 @@ interface EventContentEditorProps {
 export const EventContentEditor = ({ initialContent, onChange }: EventContentEditorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
-  const [selectedTool, setSelectedTool] = useState<string>("select");
-  const [textInput, setTextInput] = useState("");
-  const [selectedColor, setSelectedColor] = useState("#000000");
-  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
-  const [fontSize, setFontSize] = useState("20");
-  const [fontFamily, setFontFamily] = useState("Arial");
-  const [opacity, setOpacity] = useState("100");
+  const [selectedFont, setSelectedFont] = useState("Arial");
+  const [fontSize, setFontSize] = useState("16");
+  const [textColor, setTextColor] = useState("#000000");
 
   const fonts = [
     "Arial",
     "Times New Roman",
     "Helvetica",
-    "Courier New",
     "Georgia",
-    "Verdana"
+    "Verdana",
+    "Courier New"
   ];
 
-  const colors = [
-    "#000000", // Black
-    "#ea384c", // Red
-    "#8B5CF6", // Purple
-    "#0EA5E9", // Blue
-    "#F97316", // Orange
-    "#22C55E", // Green
-    "#D946EF", // Magenta
-    "#ffffff", // White
+  const fontSizes = [
+    "12", "14", "16", "18", "20", "24", "28", "32", "36", "48"
   ];
 
   useEffect(() => {
@@ -68,7 +56,7 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
     const fabricCanvas = new fabric.Canvas(canvasRef.current, {
       width: 800,
       height: 600,
-      backgroundColor: backgroundColor,
+      backgroundColor: "#ffffff",
     });
 
     if (initialContent) {
@@ -77,27 +65,7 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
       });
     }
 
-    // Enable object movement and modification events
     fabricCanvas.on("object:modified", () => {
-      console.log("Object modified");
-      const json = fabricCanvas.toJSON();
-      onChange(JSON.stringify(json));
-    });
-
-    fabricCanvas.on("object:moving", () => {
-      console.log("Object moving");
-      const json = fabricCanvas.toJSON();
-      onChange(JSON.stringify(json));
-    });
-
-    fabricCanvas.on("object:scaling", () => {
-      console.log("Object scaling");
-      const json = fabricCanvas.toJSON();
-      onChange(JSON.stringify(json));
-    });
-
-    fabricCanvas.on("object:rotating", () => {
-      console.log("Object rotating");
       const json = fabricCanvas.toJSON();
       onChange(JSON.stringify(json));
     });
@@ -109,60 +77,18 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
     };
   }, []);
 
-  const updateSelectedObject = (property: string, value: any) => {
-    if (!canvas) return;
-    const activeObject = canvas.getActiveObject();
-    if (activeObject) {
-      activeObject.set(property, value);
-      canvas.renderAll();
-      const json = canvas.toJSON();
-      onChange(JSON.stringify(json));
-    }
-  };
-
   const addText = () => {
-    if (!canvas || !textInput) return;
-    const text = new fabric.Text(textInput, {
-      left: 100,
-      top: 100,
+    if (!canvas) return;
+    const text = new fabric.IText("Click to edit text", {
+      left: 50,
+      top: 50,
+      fontFamily: selectedFont,
       fontSize: parseInt(fontSize),
-      fontFamily: fontFamily,
-      fill: selectedColor,
-      opacity: parseInt(opacity) / 100
+      fill: textColor,
+      width: 300,
     });
     canvas.add(text);
     canvas.setActiveObject(text);
-    setTextInput("");
-    const json = canvas.toJSON();
-    onChange(JSON.stringify(json));
-  };
-
-  const addShape = (type: "rect" | "circle") => {
-    if (!canvas) return;
-    
-    const shape = type === "rect" 
-      ? new fabric.Rect({
-          left: 100,
-          top: 100,
-          fill: selectedColor,
-          width: 100,
-          height: 100,
-          opacity: parseInt(opacity) / 100,
-          hasControls: true,
-          hasBorders: true,
-        })
-      : new fabric.Circle({
-          left: 100,
-          top: 100,
-          fill: selectedColor,
-          radius: 50,
-          opacity: parseInt(opacity) / 100,
-          hasControls: true,
-          hasBorders: true,
-        });
-
-    canvas.add(shape);
-    canvas.setActiveObject(shape);
     const json = canvas.toJSON();
     onChange(JSON.stringify(json));
   };
@@ -190,26 +116,32 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  const moveObject = (direction: 'up' | 'down' | 'left' | 'right') => {
+  const applyTextStyle = (style: string) => {
     if (!canvas) return;
     const activeObject = canvas.getActiveObject();
-    if (!activeObject) return;
+    if (!activeObject || !(activeObject instanceof fabric.IText)) return;
 
-    const MOVE_AMOUNT = 10;
-    switch (direction) {
-      case 'up':
-        activeObject.set('top', activeObject.top! - MOVE_AMOUNT);
+    switch (style) {
+      case 'bold':
+        activeObject.set('fontWeight', activeObject.fontWeight === 'bold' ? 'normal' : 'bold');
         break;
-      case 'down':
-        activeObject.set('top', activeObject.top! + MOVE_AMOUNT);
+      case 'italic':
+        activeObject.set('fontStyle', activeObject.fontStyle === 'italic' ? 'normal' : 'italic');
         break;
-      case 'left':
-        activeObject.set('left', activeObject.left! - MOVE_AMOUNT);
+      case 'underline':
+        activeObject.set('underline', !activeObject.underline);
         break;
-      case 'right':
-        activeObject.set('left', activeObject.left! + MOVE_AMOUNT);
+      case 'alignLeft':
+        activeObject.set('textAlign', 'left');
+        break;
+      case 'alignCenter':
+        activeObject.set('textAlign', 'center');
+        break;
+      case 'alignRight':
+        activeObject.set('textAlign', 'right');
         break;
     }
+
     canvas.renderAll();
     const json = canvas.toJSON();
     onChange(JSON.stringify(json));
@@ -225,70 +157,74 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
     }
   };
 
-  const updateBackgroundColor = (color: string) => {
-    if (!canvas) return;
-    canvas.set('backgroundColor', color);
-    canvas.renderAll();
-    const json = canvas.toJSON();
-    onChange(JSON.stringify(json));
-    setBackgroundColor(color);
-  };
-
   return (
     <Card className="w-full">
       <CardContent className="p-6">
-        <div className="flex flex-wrap gap-4 mb-4">
-          <Button
-            variant={selectedTool === "select" ? "default" : "outline"}
-            onClick={() => setSelectedTool("select")}
-          >
-            <Move className="w-4 h-4 mr-2" />
-            Select
+        <div className="flex flex-wrap gap-4 mb-4 items-center border-b pb-4">
+          {/* Text Controls */}
+          <Button variant="outline" onClick={addText}>
+            <Type className="w-4 h-4 mr-2" />
+            Add Text
           </Button>
-          
-          <div className="flex items-center gap-2">
-            <Label htmlFor="text-input">Text:</Label>
-            <Input
-              id="text-input"
-              value={textInput}
-              onChange={(e) => setTextInput(e.target.value)}
-              className="w-40"
-            />
-            <Select value={fontFamily} onValueChange={setFontFamily}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="Font" />
-              </SelectTrigger>
-              <SelectContent>
-                {fonts.map((font) => (
-                  <SelectItem key={font} value={font}>
-                    {font}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Input
-              type="number"
-              value={fontSize}
-              onChange={(e) => setFontSize(e.target.value)}
-              className="w-20"
-              placeholder="Size"
-            />
-            <Button onClick={addText} variant="outline">
-              <TextCursor className="w-4 h-4 mr-2" />
-              Add
+
+          <Select value={selectedFont} onValueChange={setSelectedFont}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Font" />
+            </SelectTrigger>
+            <SelectContent>
+              {fonts.map((font) => (
+                <SelectItem key={font} value={font}>
+                  {font}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={fontSize} onValueChange={setFontSize}>
+            <SelectTrigger className="w-24">
+              <SelectValue placeholder="Size" />
+            </SelectTrigger>
+            <SelectContent>
+              {fontSizes.map((size) => (
+                <SelectItem key={size} value={size}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Input
+            type="color"
+            value={textColor}
+            onChange={(e) => setTextColor(e.target.value)}
+            className="w-12 h-8 p-0 border-none"
+          />
+
+          <div className="flex gap-1">
+            <Button size="icon" variant="outline" onClick={() => applyTextStyle('bold')}>
+              <Bold className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="outline" onClick={() => applyTextStyle('italic')}>
+              <Italic className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="outline" onClick={() => applyTextStyle('underline')}>
+              <Underline className="w-4 h-4" />
             </Button>
           </div>
 
-          <Button onClick={() => addShape("rect")} variant="outline">
-            <Square className="w-4 h-4 mr-2" />
-            Rectangle
-          </Button>
+          <div className="flex gap-1">
+            <Button size="icon" variant="outline" onClick={() => applyTextStyle('alignLeft')}>
+              <AlignLeft className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="outline" onClick={() => applyTextStyle('alignCenter')}>
+              <AlignCenter className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="outline" onClick={() => applyTextStyle('alignRight')}>
+              <AlignRight className="w-4 h-4" />
+            </Button>
+          </div>
 
-          <Button onClick={() => addShape("circle")} variant="outline">
-            <CircleIcon className="w-4 h-4 mr-2" />
-            Circle
-          </Button>
-
+          {/* Image Upload */}
           <div>
             <Input
               type="file"
@@ -299,7 +235,7 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
             />
             <Label htmlFor="image-upload">
               <Button variant="outline" asChild>
-                <span className="cursor-pointer">
+                <span>
                   <Image className="w-4 h-4 mr-2" />
                   Add Image
                 </span>
@@ -307,79 +243,8 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
             </Label>
           </div>
 
-          {/* Layout Controls */}
-          <div className="flex items-center gap-2">
-            <Label>Move:</Label>
-            <div className="flex gap-1">
-              <Button size="sm" variant="outline" onClick={() => moveObject('up')}>
-                <ArrowUpDown className="w-4 h-4" />
-                Up
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => moveObject('down')}>
-                <ArrowUpDown className="w-4 h-4" />
-                Down
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => moveObject('left')}>
-                <ArrowLeftRight className="w-4 h-4" />
-                Left
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => moveObject('right')}>
-                <ArrowLeftRight className="w-4 h-4" />
-                Right
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Label>Fill:</Label>
-            <div className="flex gap-1">
-              {colors.map((color) => (
-                <div
-                  key={color}
-                  className="w-6 h-6 rounded cursor-pointer border border-gray-300"
-                  style={{ backgroundColor: color }}
-                  onClick={() => {
-                    setSelectedColor(color);
-                    updateSelectedObject('fill', color);
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Label>Background:</Label>
-            <div className="flex gap-1">
-              {colors.map((color) => (
-                <div
-                  key={color}
-                  className="w-6 h-6 rounded cursor-pointer border border-gray-300"
-                  style={{ backgroundColor: color }}
-                  onClick={() => updateBackgroundColor(color)}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Label>Opacity:</Label>
-            <Input
-              type="range"
-              min="0"
-              max="100"
-              value={opacity}
-              onChange={(e) => {
-                setOpacity(e.target.value);
-                updateSelectedObject('opacity', parseInt(e.target.value) / 100);
-              }}
-              className="w-24"
-            />
-            <span>{opacity}%</span>
-          </div>
-
-          <Button onClick={deleteSelected} variant="destructive">
-            <Trash2 className="w-4 h-4 mr-2" />
-            Delete
+          <Button variant="destructive" size="icon" onClick={deleteSelected}>
+            <Trash2 className="w-4 h-4" />
           </Button>
         </div>
 
