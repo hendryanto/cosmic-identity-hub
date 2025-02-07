@@ -29,7 +29,7 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
 
   const handleImageUpload = (imageUrl: string) => {
     // Remove any path prefixes and keep only the filename
-    const cleanImageUrl = imageUrl.replace(`${SERVER_URL}/public/uploads/`, '');
+    const cleanImageUrl = imageUrl.split('/').pop() || '';
     setForm(prev => ({
       ...prev,
       images: [...(prev.images || []), cleanImageUrl]
