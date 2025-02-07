@@ -1,29 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as fabric from "fabric";
-import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
-import { Label } from "../../ui/label";
 import { Card, CardContent } from "../../ui/card";
-import { 
-  Image,
-  Bold,
-  Italic,
-  Underline,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  List,
-  ListOrdered,
-  Type,
-  Trash2,
-} from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../ui/select";
+import { EditorToolbar } from "./editor/EditorToolbar";
 
 interface EventContentEditorProps {
   initialContent?: string;
@@ -36,19 +14,6 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
   const [selectedFont, setSelectedFont] = useState("Arial");
   const [fontSize, setFontSize] = useState("16");
   const [textColor, setTextColor] = useState("#000000");
-
-  const fonts = [
-    "Arial",
-    "Times New Roman",
-    "Helvetica",
-    "Georgia",
-    "Verdana",
-    "Courier New"
-  ];
-
-  const fontSizes = [
-    "12", "14", "16", "18", "20", "24", "28", "32", "36", "48"
-  ];
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -160,93 +125,18 @@ export const EventContentEditor = ({ initialContent, onChange }: EventContentEdi
   return (
     <Card className="w-full">
       <CardContent className="p-6">
-        <div className="flex flex-wrap gap-4 mb-4 items-center border-b pb-4">
-          {/* Text Controls */}
-          <Button variant="outline" onClick={addText}>
-            <Type className="w-4 h-4 mr-2" />
-            Add Text
-          </Button>
-
-          <Select value={selectedFont} onValueChange={setSelectedFont}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Font" />
-            </SelectTrigger>
-            <SelectContent>
-              {fonts.map((font) => (
-                <SelectItem key={font} value={font}>
-                  {font}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={fontSize} onValueChange={setFontSize}>
-            <SelectTrigger className="w-24">
-              <SelectValue placeholder="Size" />
-            </SelectTrigger>
-            <SelectContent>
-              {fontSizes.map((size) => (
-                <SelectItem key={size} value={size}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Input
-            type="color"
-            value={textColor}
-            onChange={(e) => setTextColor(e.target.value)}
-            className="w-12 h-8 p-0 border-none"
-          />
-
-          <div className="flex gap-1">
-            <Button size="icon" variant="outline" onClick={() => applyTextStyle('bold')}>
-              <Bold className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="outline" onClick={() => applyTextStyle('italic')}>
-              <Italic className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="outline" onClick={() => applyTextStyle('underline')}>
-              <Underline className="w-4 h-4" />
-            </Button>
-          </div>
-
-          <div className="flex gap-1">
-            <Button size="icon" variant="outline" onClick={() => applyTextStyle('alignLeft')}>
-              <AlignLeft className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="outline" onClick={() => applyTextStyle('alignCenter')}>
-              <AlignCenter className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="outline" onClick={() => applyTextStyle('alignRight')}>
-              <AlignRight className="w-4 h-4" />
-            </Button>
-          </div>
-
-          {/* Image Upload */}
-          <div>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-              id="image-upload"
-            />
-            <Label htmlFor="image-upload">
-              <Button variant="outline" asChild>
-                <span>
-                  <Image className="w-4 h-4 mr-2" />
-                  Add Image
-                </span>
-              </Button>
-            </Label>
-          </div>
-
-          <Button variant="destructive" size="icon" onClick={deleteSelected}>
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
+        <EditorToolbar
+          selectedFont={selectedFont}
+          setSelectedFont={setSelectedFont}
+          fontSize={fontSize}
+          setFontSize={setFontSize}
+          textColor={textColor}
+          setTextColor={setTextColor}
+          onStyleClick={applyTextStyle}
+          onAddText={addText}
+          onImageUpload={handleImageUpload}
+          onDelete={deleteSelected}
+        />
 
         <div className="border border-gray-200 rounded-lg overflow-hidden">
           <canvas ref={canvasRef} className="max-w-full" />
