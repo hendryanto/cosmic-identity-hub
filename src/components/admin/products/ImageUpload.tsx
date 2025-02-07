@@ -45,7 +45,8 @@ export const ImageUpload = ({ onUpload, existingImages, onDelete }: ImageUploadP
         console.log('Upload response:', data);
         
         if (data.success && data.imageUrl) {
-          const imageUrl = `${SERVER_URL}/public/uploads/${data.imageUrl.split('/').pop()}`;
+          const filename = data.imageUrl.split('/').pop();
+          const imageUrl = `${SERVER_URL}/public/uploads/${filename}`;
           console.log('Constructed image URL:', imageUrl);
           onUpload(imageUrl);
           uploadedCount++;
@@ -97,7 +98,11 @@ export const ImageUpload = ({ onUpload, existingImages, onDelete }: ImageUploadP
       {existingImages.length > 0 && (
         <div className="mt-4">
           <ImageSlider 
-            images={existingImages} 
+            images={existingImages.map(img => {
+              if (img.startsWith('http')) return img;
+              const filename = img.split('/').pop();
+              return `${SERVER_URL}/public/uploads/${filename}`;
+            })} 
             onDelete={onDelete}
           />
         </div>

@@ -92,9 +92,9 @@ const ProductList = ({ onEdit }: ProductListProps) => {
       return imageUrl;
     }
 
-    // Ensure we have a clean path without multiple slashes
-    const cleanImageUrl = imageUrl.replace(/^\/+/, '');
-    const fullUrl = `${SERVER_URL}/public/uploads/${cleanImageUrl}`;
+    // Clean the image URL to ensure it only contains the filename
+    const filename = imageUrl.split('/').pop();
+    const fullUrl = `${SERVER_URL}/public/uploads/${filename}`;
     console.log('Constructed full URL:', fullUrl);
     return fullUrl;
   };
