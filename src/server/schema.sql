@@ -7,3 +7,6 @@ CREATE TABLE IF NOT EXISTS events (
   images TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Add images column if it doesn't exist
+ALTER TABLE events ADD COLUMN IF NOT EXISTS images TEXT AFTER content;
