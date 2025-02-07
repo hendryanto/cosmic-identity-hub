@@ -25,15 +25,32 @@ function handleError($message) {
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
         try {
-            $stmt = $pdo->query("SELECT * FROM events ORDER BY date DESC");
-            $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Convert images string to array
-            foreach ($events as &$event) {
-                $event['images'] = $event['images'] ? explode(',', $event['images']) : [];
+            if (isset($_GET['id'])) {
+                // Fetch single event
+                $stmt = $pdo->prepare("SELECT * FROM events WHERE id = ?");
+                $stmt->execute([$_GET['id']]);
+                $event = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($event) {
+                    // Convert images string to array
+                    $event['images'] = $event['images'] ? explode(',', $event['images']) : [];
+                    echo json_encode($event);
+                } else {
+                    http_response_code(404);
+                    echo json_encode(['error' => 'Event not found']);
+                }
+            } else {
+                // Fetch all events
+                $stmt = $pdo->query("SELECT * FROM events ORDER BY date DESC");
+                $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                // Convert images string to array for each event
+                foreach ($events as &$event) {
+                    $event['images'] = $event['images'] ? explode(',', $event['images']) : [];
+                }
+                
+                echo json_encode($events);
             }
-            
-            echo json_encode($events);
         } catch (PDOException $e) {
             handleError($e->getMessage());
         }
@@ -78,9 +95,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
             }
             
             $images = isset($data->images) ? implode(',', $data->images) : '';
-            
-            error_log("Updating event with ID: " . $data->id);
-            error_log("Images data: " . $images);
             
             $stmt = $pdo->prepare(
                 "UPDATE events 
