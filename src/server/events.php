@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 function handleError($message) {
+    error_log("Event API Error: " . $message);
     http_response_code(500);
     echo json_encode([
         'success' => false,
@@ -41,6 +42,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
     case 'POST':
         try {
             $data = json_decode(file_get_contents("php://input"));
+            if (!$data) {
+                handleError("Invalid JSON data received");
+            }
+            
             $images = isset($data->images) ? implode(',', $data->images) : '';
             
             $stmt = $pdo->prepare(
@@ -68,7 +73,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
     case 'PUT':
         try {
             $data = json_decode(file_get_contents("php://input"));
+            if (!$data || !isset($data->id)) {
+                handleError("Invalid JSON data or missing ID");
+            }
+            
             $images = isset($data->images) ? implode(',', $data->images) : '';
+            
+            error_log("Updating event with ID: " . $data->id);
+            error_log("Images data: " . $images);
             
             $stmt = $pdo->prepare(
                 "UPDATE events 
@@ -76,7 +88,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                  WHERE id = ?"
             );
             
-            $stmt->execute([
+            $result = $stmt->execute([
                 $data->title,
                 $data->description,
                 $data->date,
@@ -85,7 +97,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 $data->id
             ]);
             
-            echo json_encode(["success" => true]);
+            if ($result) {
+                echo json_encode(["success" => true]);
+            } else {
+                handleError("Failed to update event");
+            }
         } catch (PDOException $e) {
             handleError($e->getMessage());
         }

@@ -24,6 +24,7 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
     content: "",
     images: [],
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const handleImageUpload = (imageUrl: string) => {
@@ -42,18 +43,28 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
     try {
+      console.log("Submitting event data:", form);
+      
       const response = await fetch(`${SERVER_URL}/src/server/events.php`, {
         method: event ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          id: event?.id // Include ID for PUT requests
+        }),
         credentials: 'include'
       });
 
+      const data = await response.json();
+      console.log("Server response:", data);
+
       if (!response.ok) {
-        throw new Error('Failed to save event');
+        throw new Error(data.error || 'Failed to save event');
       }
 
       toast({
@@ -65,9 +76,11 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
       console.error('Error saving event:', error);
       toast({
         title: "Error",
-        description: "Failed to save event",
+        description: error instanceof Error ? error.message : "Failed to save event",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -84,6 +97,7 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
               id="title"
               value={form.title}
               onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
+              required
             />
           </div>
 
@@ -93,6 +107,7 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
               id="description"
               value={form.description}
               onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))}
+              required
             />
           </div>
 
@@ -103,6 +118,7 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
               type="date"
               value={form.date}
               onChange={(e) => setForm(prev => ({ ...prev, date: e.target.value }))}
+              required
             />
           </div>
 
@@ -124,11 +140,11 @@ const EventForm = ({ event, onSave, onCancel }: EventFormProps) => {
           </div>
 
           <div className="flex gap-4">
-            <Button type="submit">
-              {event ? 'Update Event' : 'Create Event'}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : event ? 'Update Event' : 'Create Event'}
             </Button>
             {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
+              <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
                 Cancel
               </Button>
             )}
